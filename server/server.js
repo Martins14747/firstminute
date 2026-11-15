@@ -1,7 +1,7 @@
 // server.js — FirstMinute backend entry point.
 // Wires the Router with all API routes and the static frontend.
 //
-// Run:  node /home/z/my-project/server/server.js
+// Run:  node server/server.js
 // Then: http://localhost:8787/firstminute.html
 //
 // Env:  PORT (8787)  HOST (0.0.0.0)  LOG_LEVEL (info)  LOG_FILE (optional)

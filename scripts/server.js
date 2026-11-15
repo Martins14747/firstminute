@@ -1,29 +1,25 @@
 // FirstMinute AI Backend
 // Provides: LLM "on-site doctor" chat + VLM camera-vision wound analysis
-// Serves the static frontend from /home/z/my-project/download/
+// Serves the static frontend from the project's download directory.
 //
-// Run:  node /home/z/my-project/scripts/server.js
+// Run:  node scripts/server.js
 // Then open http://localhost:8787/firstminute.html
 
-import ZAI from 'z-ai-web-dev-sdk';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
+import { fileURLToPath } from 'node:url';
 import https from 'node:https';
 import { VIDEO_PROMPTS, VIDEO_CAPTIONS, VIDEO_IDS } from './video-prompts.js';
+import { getZAI } from '../server/lib/zai.js';
 
-const PORT = 8787;
-const DOWNLOAD_DIR = '/home/z/my-project/download';
+const PORT = parseInt(process.env.PORT || '8787', 10);
+const HOST = process.env.HOST || '0.0.0.0';
+const ROOT_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const DOWNLOAD_DIR = path.join(ROOT_DIR, 'download');
 const VIDEOS_DIR = path.join(DOWNLOAD_DIR, 'videos');
 fs.mkdirSync(VIDEOS_DIR, { recursive: true });
-
-// ---------- ZAI singleton ----------
-let zaiPromise = null;
-function getZAI() {
-  if (!zaiPromise) zaiPromise = ZAI.create();
-  return zaiPromise;
-}
 
 // ---------- System prompt for the on-site doctor ----------
 const DOCTOR_SYSTEM = `You are "FirstMinute Doctor", an AI first-aid assistant embedded in an emergency app used by ordinary Nigerians. You help a layperson at the scene of a medical emergency.
@@ -399,7 +395,7 @@ const server = http.createServer(async (req, res) => {
   sendJSON(res, 404, { error: 'not found' });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, HOST, () => {
   console.log(`FirstMinute AI backend running:`);
   console.log(`  App:        http://localhost:${PORT}/firstminute.html`);
   console.log(`  Doctor:     POST http://localhost:${PORT}/api/doctor`);

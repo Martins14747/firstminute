@@ -173,7 +173,7 @@ firstminute/
     └── analyze-ui-reference.js  UI-reference analysis helper
 ```
 
-> **Two entry points.** `server/server.js` is the modular backend (used by `npm start`). `scripts/server.js` is an older monolithic single-file version kept for reference — both serve the same API on port 8787.
+> **Two entry points.** `server/server.js` is the modular backend (used by `npm start`). `scripts/server.js` is a legacy monolithic alternative, also portable and configurable with `PORT`/`HOST`; use the modular entry point for deployment.
 
 ### REST API
 

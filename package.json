@@ -1,0 +1,22 @@
+{
+  "name": "firstminute",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Mobile-first first-aid web app with AI on-site doctor, camera vision analysis, and AI video walkthroughs for Nigerian medical emergencies.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "start:static": "node scripts/server.js",
+    "generate-videos": "node scripts/generate-videos.js",
+    "test": "node --test server/test/*.test.js",
+    "test:unit": "node --test server/test/data.test.js server/test/lib.test.js",
+    "test:integration": "node --test server/test/integration.test.js"
+  },
+  "dependencies": {
+    "z-ai-web-dev-sdk": "0.0.18"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

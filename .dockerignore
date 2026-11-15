@@ -1,0 +1,7 @@
+.git
+.env
+.z-ai-config
+node_modules
+server/data/db.json
+*.tmp
+download/videos/.*.generating

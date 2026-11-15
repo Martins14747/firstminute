@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#A8E6DC">
+<meta name="description" content="FirstMinute — emergency first-aid guidance for everyday Nigerians. Step-by-step instructions, CPR assistant, hospital finder and incident reporting.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>FirstMinute — Emergency First Aid</title>
+<style>
+/* ============================================================
+   FirstMinute — Glassmorphism Healthcare UI
+   Mint→coral gradient · teal primary · coral emergency ·
+   frosted white cards · soft shadows · 3D-style tiles
+   ============================================================ */
+
+/* ============ DESIGN TOKENS ============ */
+:root{
+  /* Brand — teal primary, coral emergency */
+  --teal:#14B8A6; --teal-dark:#0D9488; --teal-soft:#E0F5F2; --teal-glow:rgba(20,184,166,.25);
+  --coral:#F26D5F; --coral-dark:#E85A4F; --coral-soft:#FFE7E2; --coral-glow:rgba(242,109,95,.28);
+  --emerald:#10B981; --emerald-soft:#D1FAE5;
+  --azure:#3B82F6; --azure-soft:#DBEAFE;
+  --purple:#8B5CF6; --purple-soft:#EDE4FF;
+  /* "warn" severity uses a warm coral tint (not a separate amber hue) to stay in the 2-color system */
+  --warn:#F59E6B; --warn-dark:#D97757; --warn-soft:#FFEDD8;
+
+  /* Page gradient — cool mint-dominant, with a soft coral wash bottom-right */
+  --grad-from:#6FD3CC;
+  --grad-mid1:#A8E6DC;
+  --grad-mid2:#C9EDE6;
+  --grad-to:#FBC7A4;
+
+  /* Neutrals — light, warm */
+  --bg:#F7FBFA;
+  --surface:#FFFFFF;          /* solid card */
+  --glass:rgba(255,255,255,.72);  /* frosted glass card — readable */
+  --glass-strong:rgba(255,255,255,.88);
+  --glass-border:rgba(255,255,255,.85);
+  --ink:#1F2937;              /* dark charcoal headings */
+  --ink-2:#374151;
+  --muted:#6B7280;            /* medium gray body */
+  --muted-2:#9CA3AF;
+  --line:rgba(31,41,55,.08);
+  --line-strong:rgba(31,41,55,.14);
+
+  /* Shadows — soft, diffuse, slightly tinted */
+  --shadow-sm:0 2px 8px rgba(20,60,60,.06);
+  --shadow-md:0 8px 24px rgba(20,60,60,.08), 0 2px 6px rgba(20,60,60,.04);
+  --shadow-lg:0 16px 40px rgba(20,60,60,.12), 0 6px 14px rgba(20,60,60,.06);
+  --shadow-teal:0 10px 28px rgba(20,184,166,.32);
+  --shadow-coral:0 10px 28px rgba(242,109,95,.32);
+
+  /* Radii */
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px; --r-2xl:32px; --r-pill:999px;
+
+  /* Layout */
+  --maxw:480px;
+
+  /* Motion */
+  --ease:cubic-bezier(.22,.61,.36,1); --ease-out:cubic-bezier(.16,1,.3,1);
+  --t-fast:.16s; --t-med:.28s; --t-slow:.5s;
+}
+
+/* ============ RESET ============ */
+*,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html{ -webkit-text-size-adjust:100%; font-size:clamp(15px, 2.6vw, 17px); }
+body{
+  font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
+  color:var(--ink); line-height:1.55; font-size:0.92rem;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  min-height:100vh;
+  /* Soft diagonal mint→coral gradient like the reference (mint-dominant) */
+  background:
+    radial-gradient(120% 80% at 0% 0%, var(--grad-from) 0%, var(--grad-mid1) 30%, transparent 58%),
+    radial-gradient(100% 70% at 100% 100%, var(--grad-to) 0%, rgba(252,199,164,.5) 30%, transparent 60%),
+    linear-gradient(160deg, #E8F8F5 0%, #EEF8F4 55%, #F7EFE8 100%);
+  background-attachment:fixed;
+  padding-bottom:calc(96px + env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; font-size:inherit; }
+input,textarea,select{ font-family:inherit; font-size:16px; color:inherit; }
+a{ color:inherit; text-decoration:none; }
+svg{ display:block; }
+h1,h2,h3,h4{ font-weight:700; color:var(--ink); letter-spacing:-.01em; }
+b{ font-weight:600; }
+
+/* ============ APP FRAME ============ */
+.app{
+  max-width:var(--maxw); margin:0 auto; min-height:100vh;
+  position:relative; padding:env(safe-area-inset-top) 0 0;
+  display:flex; flex-direction:column;
+}
+.app > .content{ flex:1; }
+
+/* ============ HEADER (glass, floating) ============ */
+.header{
+  position:sticky; top:0; z-index:40;
+  padding:10px 16px 12px;
+  backdrop-filter:saturate(180%) blur(18px);
+  -webkit-backdrop-filter:saturate(180%) blur(18px);
+  background:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.5);
+}
+.header .row{ display:flex; align-items:center; gap:10px; min-height:42px; }
+.icon-btn{
+  width:42px; height:42px; border-radius:var(--r-pill);
+  display:grid; place-items:center; color:var(--teal-dark);
+  background:var(--teal-soft); transition:transform var(--t-fast) var(--ease), background var(--t-fast);
+  flex-shrink:0;
+}
+.icon-btn:active{ transform:scale(.92); }
+.icon-btn svg{ width:22px; height:22px; }
+.icon-btn.back{ opacity:0; pointer-events:none; transition:opacity var(--t-med) var(--ease); }
+body.has-back .icon-btn.back{ opacity:1; pointer-events:auto; }
+.brand{ display:flex; align-items:center; gap:10px; }
+.brand .mark{
+  width:38px; height:38px; border-radius:var(--r-pill);
+  background:linear-gradient(145deg,var(--teal),var(--teal-dark));
+  display:grid; place-items:center; position:relative;
+  box-shadow:var(--shadow-teal);
+}
+.brand .mark svg{ width:20px; height:20px; }
+.brand .mark .ping{
+  position:absolute; inset:0; border-radius:inherit;
+  background:var(--teal); opacity:.5; animation:ping 2.4s var(--ease) infinite;
+}
+@keyframes ping{ 0%{transform:scale(1);opacity:.5} 70%,100%{transform:scale(1.7);opacity:0} }
+.brand span:not(.mark):not(.ping){ font-weight:700; font-size:18px; color:var(--ink); letter-spacing:-.02em; }
+.header .title{ margin-left:auto; font-size:15px; font-weight:600; color:var(--ink-2); padding:6px 14px; border-radius:var(--r-pill); background:var(--glass); border:1px solid var(--glass-border); white-space:nowrap; max-width:50%; overflow:hidden; text-overflow:ellipsis; }
+.header .title:empty{ display:none; }
+
+/* ============ SOS BAR (soft, glassy — not a heavy block) ============ */
+.sos{
+  margin:14px 16px 6px; padding:12px 14px; border-radius:var(--r-xl);
+  background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-sm);
+  display:flex; align-items:center; gap:12px; position:relative; overflow:hidden;
+}
+.sos::before{ content:''; position:absolute; right:-20px; top:-20px; width:80px; height:80px; border-radius:50%; background:radial-gradient(circle, var(--coral-glow), transparent 70%); pointer-events:none; }
+.sos .nums{ font-size:11.5px; color:var(--muted); line-height:1.5; flex:1; font-weight:500; position:relative; z-index:1; }
+.sos .nums b{ font-weight:800; font-size:15px; color:var(--coral-dark); }
+.sos .call{
+  background:linear-gradient(145deg,var(--coral),var(--coral-dark)); color:#fff;
+  font-weight:700; font-size:13px; padding:10px 16px; border-radius:var(--r-pill);
+  display:flex; align-items:center; gap:7px; box-shadow:var(--shadow-coral);
+  transition:transform var(--t-fast) var(--ease); position:relative; z-index:1; flex-shrink:0;
+}
+.sos .call:active{ transform:scale(.95); }
+.sos .call svg{ width:16px; height:16px; }
+
+/* ============ SCREENS ============ */
+.screen{ display:none; padding:6px 16px 24px; animation:fadeIn .4s var(--ease-out); }
+.screen.active{ display:block; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============ HERO (home) ============ */
+.hero{
+  margin-top:14px; margin-bottom:18px;
+  background:var(--glass);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-2xl);
+  padding:24px 20px 20px;
+  box-shadow:var(--shadow-md);
+  position:relative; overflow:hidden;
+}
+.hero::after{ content:''; position:absolute; right:-40px; top:-40px; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle, rgba(20,184,166,.18), transparent 70%); pointer-events:none; }
+.hero h1{ font-size:26px; line-height:1.2; margin-bottom:6px; color:var(--ink); }
+.hero .sub{ font-size:13.5px; color:var(--muted); margin-bottom:16px; }
+.search{
+  position:relative; display:flex; align-items:center; gap:8px;
+  background:#fff; border-radius:var(--r-pill);
+  padding:4px 6px 4px 16px; box-shadow:var(--shadow-sm);
+  border:1px solid var(--line);
+}
+.search .lead{ display:grid; place-items:center; color:var(--muted); flex-shrink:0; }
+.search .lead svg{ width:18px; height:18px; }
+.search input{ flex:1; border:none; outline:none; background:transparent; padding:12px 4px; font-size:14.5px; color:var(--ink); }
+.search input::placeholder{ color:var(--muted-2); }
+.search .voice{
+  width:40px; height:40px; border-radius:var(--r-pill); flex-shrink:0;
+  background:linear-gradient(145deg,var(--teal),var(--teal-dark));
+  color:#fff; display:grid; place-items:center; transition:transform var(--t-fast);
+}
+.search .voice svg{ width:18px; height:18px; }
+.search .voice:active{ transform:scale(.9); }
+.search .voice.listening{ animation:pulseVoice 1s ease-in-out infinite; }
+@keyframes pulseVoice{ 0%,100%{ box-shadow:0 0 0 0 var(--teal-glow); } 50%{ box-shadow:0 0 0 10px transparent; } }
+.search-results{ position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:30; }
+.search-results .card{ margin-top:8px; }
+
+/* ============ QUICK ACTIONS (3D-style tiles) ============ */
+.quick{
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;
+}
+.quick > a{
+  display:flex; flex-direction:column; gap:10px;
+  padding:18px 16px; border-radius:var(--r-xl);
+  background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-md);
+  transition:transform var(--t-fast) var(--ease), box-shadow var(--t-fast);
+  position:relative; overflow:hidden;
+}
+.quick > a:active{ transform:translateY(2px) scale(.98); box-shadow:var(--shadow-sm); }
+.quick .ico{
+  width:52px; height:52px; border-radius:var(--r-lg);
+  display:grid; place-items:center; font-size:26px;
+  background:linear-gradient(145deg, #fff, #F0FBF9);
+  box-shadow:0 6px 14px rgba(20,60,60,.1), inset 0 -2px 4px rgba(20,184,166,.08);
+}
+.quick .ico svg{ width:26px; height:26px; }
+.quick .cpr .ico{ color:var(--coral); }
+.quick .cpr .ico{ background:linear-gradient(145deg, #fff, #FFF1EE); box-shadow:0 6px 14px rgba(242,109,95,.14), inset 0 -2px 4px rgba(242,109,95,.1); }
+.quick .quick-hosp .ico{ color:var(--teal); }
+.quick .lbl{ font-weight:700; font-size:15px; color:var(--ink); }
+.quick .desc{ font-size:11.5px; color:var(--muted); }
+
+/* ============ SECTIONS ============ */
+.section{
+  font-size:15px; font-weight:700; color:var(--ink);
+  margin:22px 2px 12px; display:flex; align-items:center; gap:8px;
+}
+.section .count{ font-size:11px; font-weight:500; color:var(--muted); background:var(--glass); padding:3px 10px; border-radius:var(--r-pill); border:1px solid var(--glass-border); }
+.disclaimer{
+  margin:18px 2px 4px; padding:14px 16px; border-radius:var(--r-lg);
+  background:var(--glass); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+  font-size:11.5px; color:var(--muted); line-height:1.6;
+}
+.disclaimer b{ color:var(--ink-2); display:block; margin-bottom:2px; font-size:12.5px; }
+
+/* ============ EMERGENCY CARDS (glass tiles) ============ */
+.grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.card{
+  display:flex; flex-direction:column; align-items:flex-start; gap:8px; text-align:left;
+  padding:18px 14px; border-radius:var(--r-xl);
+  background:var(--glass-strong); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-md);
+  transition:transform var(--t-fast) var(--ease), box-shadow var(--t-fast);
+  width:100%;
+}
+.card:active{ transform:scale(.97); box-shadow:var(--shadow-sm); }
+.card .ico{
+  width:52px; height:52px; border-radius:var(--r-lg);
+  display:grid; place-items:center; color:var(--teal-dark);
+  background:linear-gradient(145deg,#fff,#F4FBFA);
+  box-shadow:0 4px 10px rgba(20,60,60,.08), inset 0 -2px 3px rgba(0,0,0,.03);
+}
+.card .ico svg{ width:26px; height:26px; }
+.card.severe .ico{ background:linear-gradient(145deg,#fff,#FFF1EE); color:var(--coral); box-shadow:0 4px 10px rgba(242,109,95,.16), inset 0 -2px 3px rgba(242,109,95,.08); }
+.card.warn .ico{ background:linear-gradient(145deg,#fff,#FFEDD8); color:var(--warn); box-shadow:0 4px 10px rgba(245,158,107,.16), inset 0 -2px 3px rgba(245,158,107,.08); }
+.card .name{ font-weight:700; font-size:14.5px; color:var(--ink); line-height:1.25; }
+.card .tag{ display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; color:var(--muted); }
+.card .tag .dot{ width:7px; height:7px; border-radius:50%; }
+.card.severe .tag{ color:var(--coral-dark); } .card.severe .tag .dot{ background:var(--coral); }
+.card.warn .tag{ color:#D97757; } .card.warn .tag .dot{ background:var(--warn); }
+
+/* ============ DETAIL ============ */
+.detail-hero{
+  margin:14px 0 18px; padding:24px 20px; border-radius:var(--r-2xl);
+  display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+  background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-lg);
+  position:relative; overflow:hidden;
+}
+.detail-hero::after{ content:''; position:absolute; right:-30px; bottom:-30px; width:130px; height:130px; border-radius:50%; pointer-events:none; }
+.detail-hero.severe::after{ background:radial-gradient(circle, rgba(242,109,95,.22), transparent 70%); }
+.detail-hero.warn::after{ background:radial-gradient(circle, rgba(245,158,107,.22), transparent 70%); }
+.detail-hero .ico{ width:68px; height:68px; border-radius:var(--r-lg); display:grid; place-items:center; background:#fff; box-shadow:var(--shadow-md); color:var(--teal-dark); }
+.detail-hero.severe .ico{ color:var(--coral); }
+.detail-hero.warn .ico{ color:#D97757; }
+.detail-hero .ico svg{ width:34px; height:34px; }
+.detail-hero h2{ font-size:22px; }
+.sev-pill{
+  display:inline-flex; align-items:center; gap:6px; padding:5px 12px;
+  border-radius:var(--r-pill); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+}
+.sev-pill .dot{ width:7px; height:7px; border-radius:50%; }
+.sev-pill.high{ background:var(--coral-soft); color:var(--coral-dark); } .sev-pill.high .dot{ background:var(--coral); }
+.sev-pill.med{ background:var(--warn-soft); color:#D97757; } .sev-pill.med .dot{ background:var(--warn); }
+.sev-pill.low{ background:var(--emerald-soft); color:var(--emerald); } .sev-pill.low .dot{ background:var(--emerald); }
+
+/* ============ CALLOUTS (info / danger / warn) ============ */
+.callout{
+  display:flex; gap:12px; padding:14px 16px; border-radius:var(--r-lg);
+  margin:10px 0; align-items:flex-start;
+  background:var(--glass); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-sm);
+}
+.callout .ci{ width:32px; height:32px; border-radius:var(--r-md); display:grid; place-items:center; flex-shrink:0; }
+.callout .ci svg{ width:18px; height:18px; }
+.callout .body{ font-size:13px; color:var(--ink-2); line-height:1.55; }
+.callout .body b{ display:inline-block; margin-right:4px; color:var(--ink); }
+.callout.info .ci{ background:var(--teal-soft); color:var(--teal-dark); }
+.callout.danger{ background:linear-gradient(135deg, rgba(242,109,95,.12), rgba(255,231,226,.6)); border-color:rgba(242,109,95,.25); }
+.callout.danger .ci{ background:var(--coral-soft); color:var(--coral-dark); }
+.callout.warn .ci{ background:var(--warn-soft); color:#D97757; }
+.callout.success .ci{ background:var(--emerald-soft); color:var(--emerald); }
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px 20px; border-radius:var(--r-pill); font-weight:600; font-size:14.5px;
+  transition:transform var(--t-fast) var(--ease), box-shadow var(--t-fast), filter var(--t-fast);
+  width:100%; margin:8px 0;
+}
+.btn:active{ transform:scale(.97); }
+.btn svg{ width:18px; height:18px; flex-shrink:0; }
+.btn.primary{ background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; box-shadow:var(--shadow-teal); }
+.btn.coral{ background:linear-gradient(145deg,var(--coral),var(--coral-dark)); color:#fff; box-shadow:var(--shadow-coral); }
+.btn.success{ background:linear-gradient(145deg,var(--emerald),#059669); color:#fff; box-shadow:0 10px 28px rgba(16,185,129,.32); }
+.btn.warn{ background:linear-gradient(145deg,var(--warn),#D97757); color:#fff; box-shadow:0 10px 28px rgba(245,158,107,.32); }
+.btn.outline{ background:var(--glass); color:var(--ink-2); border:1.5px solid var(--line-strong); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.btn.ghost{ background:transparent; color:var(--muted); box-shadow:none; }
+.btn.icon-only{ width:auto; padding:14px; aspect-ratio:1; }
+.btn-row{ display:flex; gap:8px; } .btn-row .btn{ flex:1; margin:8px 0; }
+
+/* ============ STEPS (numbered cards) ============ */
+.steps{ display:flex; flex-direction:column; gap:10px; }
+.step{
+  display:flex; gap:12px; padding:14px 16px; border-radius:var(--r-lg);
+  background:var(--glass); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-sm);
+  align-items:flex-start; transition:transform var(--t-fast), opacity var(--t-med);
+}
+.step:active{ transform:scale(.99); }
+.step .num{
+  width:30px; height:30px; border-radius:50%; flex-shrink:0;
+  display:grid; place-items:center; font-weight:700; font-size:13px; color:#fff;
+  background:linear-gradient(145deg,var(--teal),var(--teal-dark)); box-shadow:var(--shadow-teal);
+}
+.step .body{ flex:1; font-size:13.5px; line-height:1.5; }
+.step .body b{ display:block; color:var(--ink); margin-bottom:2px; font-size:14px; }
+.step .body .d{ color:var(--muted); font-size:13px; }
+.step .check{ width:24px; height:24px; border-radius:50%; border:2px solid var(--line-strong); flex-shrink:0; display:grid; place-items:center; margin-top:2px; transition:all var(--t-med) var(--ease); }
+.step .check svg{ width:14px; height:14px; color:#fff; opacity:0; transition:opacity var(--t-med); }
+.step.done{ opacity:.62; }
+.step.done .num{ background:var(--emerald); }
+.step.done .check{ background:var(--emerald); border-color:var(--emerald); }
+.step.done .check svg{ opacity:1; }
+.step.done .body b{ text-decoration:line-through; text-decoration-color:var(--muted-2); }
+
+/* ============ ALTS ============ */
+.alts{ display:flex; flex-direction:column; gap:8px; }
+.alt{
+  display:flex; gap:12px; padding:12px 14px; border-radius:var(--r-md);
+  background:var(--warn-soft); border:1px solid rgba(245,158,107,.2);
+}
+.alt .ai{ width:24px; height:24px; border-radius:50%; flex-shrink:0; display:grid; place-items:center; color:var(--warn); font-size:14px; background:#fff; }
+.alt .body{ flex:1; font-size:12.5px; line-height:1.5; }
+.alt .need{ font-weight:600; color:#D97757; margin-bottom:2px; }
+.alt .use{ color:var(--ink-2); }
+
+/* ============ VIDEO BUTTON ============ */
+.video-btn{
+  display:flex; align-items:center; gap:14px; width:100%;
+  padding:16px 18px; margin:12px 0; border-radius:var(--r-lg);
+  background:linear-gradient(135deg, rgba(139,92,246,.1), rgba(219,234,254,.5));
+  border:1px solid rgba(139,92,246,.22);
+  transition:transform var(--t-fast) var(--ease);
+}
+.video-btn:active{ transform:scale(.98); }
+.video-btn .play-ico{ width:44px; height:44px; border-radius:50%; flex-shrink:0; display:grid; place-items:center; background:linear-gradient(145deg,var(--purple),#7C3AED); color:#fff; box-shadow:0 8px 20px rgba(139,92,246,.4); }
+.video-btn .play-ico svg{ width:18px; height:18px; }
+.video-btn .txt{ flex:1; text-align:left; }
+.video-btn .txt .t{ font-weight:700; font-size:14px; color:var(--ink); }
+.video-btn .txt .s{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+.video-btn .badge{ padding:3px 10px; border-radius:var(--r-pill); font-size:10px; font-weight:700; background:var(--purple); color:#fff; }
+.video-btn.loading{ animation:pulseGlow 1.6s ease-in-out infinite; }
+@keyframes pulseGlow{ 0%,100%{ box-shadow:0 0 0 0 rgba(139,92,246,.2); } 50%{ box-shadow:0 0 0 8px transparent; } }
+
+/* ============ FORMS ============ */
+.form-card{
+  margin:14px 0 18px; padding:22px 18px; border-radius:var(--r-2xl);
+  background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-md);
+}
+.form-card h3{ font-size:19px; margin-bottom:4px; }
+.form-card .sub{ font-size:13px; color:var(--muted); margin-bottom:18px; }
+.field{ margin-bottom:14px; }
+.field label{ display:block; font-size:12.5px; font-weight:600; color:var(--ink-2); margin-bottom:6px; }
+.field input, .field textarea, .field select{
+  width:100%; padding:13px 16px; border-radius:var(--r-md);
+  background:rgba(255,255,255,.85); border:1.5px solid var(--line-strong);
+  color:var(--ink); outline:none; transition:border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.field input:focus, .field textarea:focus, .field select:focus{
+  border-color:var(--teal); box-shadow:0 0 0 4px var(--teal-glow);
+}
+.field textarea{ resize:vertical; min-height:80px; line-height:1.5; }
+.sev-picker{ display:flex; gap:8px; }
+.sev-picker label{ flex:1; }
+.sev-picker input{ display:none; }
+.sev-picker span{ display:block; text-align:center; padding:11px 8px; border-radius:var(--r-md); font-size:12.5px; font-weight:600; background:rgba(255,255,255,.6); border:1.5px solid var(--line-strong); transition:all var(--t-fast); }
+.sev-picker input:checked + span{ background:var(--teal); color:#fff; border-color:var(--teal); box-shadow:var(--shadow-teal); }
+.report-preview{
+  background:rgba(255,255,255,.9); border:1px solid var(--line);
+  border-radius:var(--r-md); padding:16px; font-family:'SF Mono',ui-monospace,monospace;
+  font-size:12px; line-height:1.6; white-space:pre-wrap; color:var(--ink-2);
+  max-height:340px; overflow-y:auto;
+}
+
+/* ============ HOSPITALS ============ */
+.hosp-toolbar{
+  margin:14px 0 16px; padding:20px 18px; border-radius:var(--r-2xl);
+  background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-md);
+}
+.hosp-toolbar h3{ font-size:19px; }
+.hosp-toolbar .sub{ font-size:13px; color:var(--muted); margin:4px 0 14px; }
+.search-inline{ position:relative; display:flex; align-items:center; gap:8px; background:#fff; border-radius:var(--r-pill); padding:4px 6px 4px 16px; box-shadow:var(--shadow-sm); border:1px solid var(--line); margin-bottom:12px; }
+.search-inline .lead{ display:grid; place-items:center; color:var(--muted); }
+.search-inline .lead svg{ width:18px; height:18px; }
+.search-inline input{ flex:1; border:none; outline:none; background:transparent; padding:12px 4px; font-size:14px; }
+.chips{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; -ms-overflow-style:none; scrollbar-width:none; }
+.chips::-webkit-scrollbar{ display:none; }
+.chip{
+  flex-shrink:0; padding:7px 14px; border-radius:var(--r-pill); font-size:12px; font-weight:600;
+  background:rgba(255,255,255,.7); color:var(--muted); border:1px solid var(--line-strong);
+  transition:all var(--t-fast);
+}
+.chip.active{ background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; border-color:var(--teal); box-shadow:var(--shadow-teal); }
+.hosp-list{ display:flex; flex-direction:column; gap:10px; }
+.hosp{
+  display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:var(--r-lg);
+  background:var(--glass); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-sm);
+}
+.hosp .dist{ flex-shrink:0; width:54px; text-align:center; }
+.hosp .dist .km{ font-size:18px; font-weight:700; color:var(--teal-dark); line-height:1; }
+.hosp .dist .lbl{ font-size:10px; color:var(--muted); margin-top:2px; text-transform:uppercase; letter-spacing:.05em; }
+.hosp .info{ flex:1; min-width:0; }
+.hosp .info h4{ font-size:14px; line-height:1.3; }
+.hosp .info .meta{ font-size:11.5px; color:var(--muted); margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.hosp .info .pill{ background:var(--teal-soft); color:var(--teal-dark); padding:2px 8px; border-radius:var(--r-pill); font-weight:600; font-size:10.5px; }
+.hosp .acts{ display:flex; gap:8px; flex-shrink:0; }
+.hosp .act{ width:38px; height:38px; border-radius:50%; display:grid; place-items:center; transition:transform var(--t-fast); }
+.hosp .act:active{ transform:scale(.9); }
+.hosp .act svg{ width:18px; height:18px; }
+.hosp .act.call{ background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; box-shadow:var(--shadow-teal); }
+.hosp .act.map{ background:var(--azure-soft); color:var(--azure); }
+.empty{ text-align:center; padding:32px 16px; color:var(--muted); font-size:13px; display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--glass); border-radius:var(--r-lg); border:1px solid var(--glass-border); }
+.empty svg{ width:36px; height:36px; opacity:.5; }
+
+/* ============ CPR STAGE ============ */
+.cpr-stage{
+  margin:14px 0 18px; padding:30px 20px; border-radius:var(--r-2xl);
+  background:linear-gradient(160deg, rgba(255,231,226,.7), rgba(252,199,164,.4));
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-lg);
+  text-align:center; position:relative; overflow:hidden;
+}
+.cpr-stage::before{ content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 30%, rgba(242,109,95,.12), transparent 60%); pointer-events:none; }
+.cpr-stage .heart{
+  position:relative; width:90px; height:90px; margin:0 auto 18px;
+  display:grid; place-items:center; color:var(--coral);
+}
+.cpr-stage .heart svg{ width:60px; height:60px; filter:drop-shadow(0 6px 14px rgba(242,109,95,.4)); z-index:1; }
+.cpr-stage .heart .ring{ position:absolute; inset:0; border-radius:50%; border:3px solid var(--coral); opacity:.3; }
+.cpr-stage.running .heart{ animation:beat .545s var(--ease) infinite; }
+.cpr-stage.running .heart .ring{ animation:ringPulse .545s var(--ease) infinite; }
+@keyframes beat{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+@keyframes ringPulse{ 0%{ transform:scale(1); opacity:.4; } 100%{ transform:scale(1.8); opacity:0; } }
+.cpr-stage .phase{ font-size:18px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+.cpr-stage .bpm{ font-size:13px; color:var(--muted); margin-bottom:18px; }
+.cpr-stage .bpm b{ font-size:30px; font-weight:800; color:var(--coral-dark); display:block; line-height:1; }
+.cpr-meta{ display:flex; gap:10px; margin-bottom:18px; position:relative; z-index:1; }
+.cpr-meta .cell{ flex:1; background:var(--glass); border-radius:var(--r-md); padding:10px 6px; border:1px solid var(--glass-border); }
+.cpr-meta .v{ font-size:20px; font-weight:800; color:var(--ink); line-height:1; }
+.cpr-meta .l{ font-size:10px; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:.04em; }
+.cpr-controls{ display:flex; gap:10px; align-items:center; position:relative; z-index:1; }
+.cpr-controls .btn{ margin:0; } .cpr-controls .btn.primary{ flex:1; background:linear-gradient(145deg,var(--coral),var(--coral-dark)); box-shadow:var(--shadow-coral); }
+
+/* ============ CAMERA ============ */
+.cam-wrap{ position:relative; border-radius:var(--r-lg); overflow:hidden; background:#1a1a1a; aspect-ratio:3/4; margin-bottom:12px; }
+.cam-wrap video{ width:100%; height:100%; object-fit:cover; }
+.cam-wrap .cam-overlay{ position:absolute; inset:0; pointer-events:none; display:grid; place-items:center; }
+.cam-wrap .frame{ width:78%; height:62%; border:2px dashed rgba(255,255,255,.5); border-radius:var(--r-md); position:relative; }
+.cam-wrap .corners{ position:absolute; inset:-2px; }
+.cam-wrap .corners::before, .cam-wrap .corners::after{ content:''; position:absolute; width:24px; height:24px; border:3px solid #fff; border-radius:4px; }
+.cam-wrap .corners::before{ top:-3px; left:-3px; border-right:none; border-bottom:none; }
+.cam-wrap .corners::after{ bottom:-3px; right:-3px; border-left:none; border-top:none; }
+.cam-capture{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%); width:64px; height:64px; border-radius:50%; background:#fff; border:4px solid var(--coral); box-shadow:0 4px 14px rgba(0,0,0,.3); transition:transform var(--t-fast); }
+.cam-capture:active{ transform:translateX(-50%) scale(.88); }
+.cam-result{ margin-top:10px; }
+.cam-result img{ width:100%; border-radius:var(--r-md); }
+.cam-analysis{ margin-top:12px; padding:14px 16px; border-radius:var(--r-lg); background:var(--glass); border:1px solid var(--glass-border); }
+.cam-analysis h4{ display:flex; align-items:center; gap:8px; font-size:14px; margin-bottom:6px; }
+.cam-analysis h4 svg{ width:18px; height:18px; color:var(--teal-dark); }
+.cam-analysis .body{ font-size:13px; line-height:1.6; color:var(--ink-2); }
+.cam-analysis.loading h4{ color:var(--teal-dark); }
+.spinner{ width:13px; height:13px; border:2px solid var(--teal); border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin .7s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ============ REMINDERS ============ */
+.rem-list{ display:flex; flex-direction:column; gap:8px; }
+.rem{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:var(--r-lg); background:var(--glass); border:1px solid var(--glass-border); box-shadow:var(--shadow-sm); }
+.rem .pulse-dot{ width:10px; height:10px; border-radius:50%; background:var(--teal); flex-shrink:0; position:relative; }
+.rem .pulse-dot::after{ content:''; position:absolute; inset:0; border-radius:50%; background:var(--teal); animation:ping 2s var(--ease) infinite; }
+.rem.due .pulse-dot{ background:var(--coral); } .rem.due .pulse-dot::after{ background:var(--coral); }
+.rem .info{ flex:1; min-width:0; }
+.rem .info h4{ font-size:14px; }
+.rem .info .when{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-top:3px; }
+.rem .info .when svg{ width:13px; height:13px; }
+.rem .del{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center; color:var(--coral); background:var(--coral-soft); transition:transform var(--t-fast); flex-shrink:0; }
+.rem .del:active{ transform:scale(.9); }
+.rem .del svg{ width:16px; height:16px; }
+
+/* ============ DOCTOR CHAT ============ */
+.chat-wrap{ padding:14px 0 120px; }
+.chat-intro{ padding:18px 18px 14px; margin-bottom:12px; border-radius:var(--r-xl); background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--glass-border); box-shadow:var(--shadow-md); }
+.chat-intro .row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.chat-intro .avatar{ width:48px; height:48px; border-radius:var(--r-md); background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; display:grid; place-items:center; box-shadow:var(--shadow-teal); flex-shrink:0; }
+.chat-intro .avatar svg{ width:24px; height:24px; }
+.chat-intro h2{ font-size:17px; }
+.chat-intro .tag{ font-size:11.5px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-top:2px; }
+.chat-intro .tag .live{ width:7px; height:7px; border-radius:50%; background:var(--emerald); animation:ping 2s infinite; }
+.chat-intro p{ font-size:12.5px; color:var(--muted); line-height:1.6; }
+.chips-prompt{ display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+.chips-prompt .chip{ font-size:11px; }
+.chat-status{ display:flex; align-items:center; gap:8px; padding:8px 16px; font-size:12px; color:var(--muted); }
+.chat-status.error{ color:var(--coral-dark); }
+.chat-msgs{ display:flex; flex-direction:column; gap:12px; padding:0 4px; }
+.msg{ display:flex; gap:10px; align-items:flex-end; max-width:88%; }
+.msg .av{ width:32px; height:32px; border-radius:var(--r-md); flex-shrink:0; display:grid; place-items:center; }
+.msg .av svg{ width:18px; height:18px; }
+.msg.doctor{ align-self:flex-start; }
+.msg.doctor .av{ background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; }
+.msg.user{ align-self:flex-end; flex-direction:row-reverse; }
+.msg.user .av{ background:var(--coral-soft); color:var(--coral-dark); }
+.msg .bubble{ padding:12px 16px; border-radius:var(--r-lg); font-size:13.5px; line-height:1.55; }
+.msg.doctor .bubble{ background:var(--surface); color:var(--ink); border-bottom-left-radius:4px; box-shadow:var(--shadow-sm); }
+.msg.user .bubble{ background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; border-bottom-right-radius:4px; box-shadow:var(--shadow-teal); }
+.msg .bubble .alert{ background:var(--coral-soft); color:var(--coral-dark); padding:8px 12px; border-radius:var(--r-md); font-weight:700; margin-bottom:6px; font-size:13px; }
+.msg .bubble .wf{ color:var(--coral-dark); font-weight:700; }
+.msg .bubble ol, .msg .bubble ul{ margin:6px 0 6px 18px; }
+.msg .bubble li{ margin-bottom:3px; }
+.chat-suggestions{ display:flex; flex-direction:column; gap:6px; margin-top:12px; padding:0 4px; }
+.sugg{ text-align:left; padding:11px 16px; border-radius:var(--r-md); background:var(--glass); border:1px solid var(--glass-border); font-size:12.5px; color:var(--ink-2); transition:all var(--t-fast); }
+.sugg:active{ transform:scale(.98); background:var(--teal-soft); border-color:var(--teal); }
+.chat-input-wrap{ position:fixed; bottom:calc(76px + env(safe-area-inset-bottom)); left:0; right:0; max-width:var(--maxw); margin:0 auto; padding:10px 16px; background:rgba(255,255,255,.75); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--glass-border); display:flex; gap:8px; align-items:flex-end; z-index:35; }
+#chatInput{ flex:1; resize:none; max-height:120px; min-height:46px; padding:12px 16px; border-radius:var(--r-pill); border:1.5px solid var(--line-strong); background:#fff; font-size:14px; color:var(--ink); outline:none; line-height:1.4; }
+#chatInput:focus{ border-color:var(--teal); box-shadow:0 0 0 4px var(--teal-glow); }
+.chat-send{ width:46px; height:46px; border-radius:50%; flex-shrink:0; background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff; display:grid; place-items:center; box-shadow:var(--shadow-teal); transition:transform var(--t-fast); }
+.chat-send:active{ transform:scale(.9); }
+.chat-send:disabled{ opacity:.5; }
+.chat-send svg{ width:20px; height:20px; }
+
+/* ============ BOTTOM NAV (floating, glass, center FAB) ============ */
+.nav{
+  position:fixed; bottom:calc(12px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
+  width:calc(100% - 24px); max-width:calc(var(--maxw) - 24px);
+  display:flex; align-items:center; justify-content:space-around;
+  padding:8px 12px; border-radius:var(--r-pill);
+  background:rgba(255,255,255,.78); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-lg);
+  z-index:36;
+}
+.nav button{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 10px; border-radius:var(--r-md); color:var(--muted); font-size:9.5px; font-weight:600; transition:color var(--t-fast), transform var(--t-fast); flex:1; }
+.nav button .ico{ display:grid; place-items:center; }
+.nav button .ico svg{ width:22px; height:22px; }
+.nav button.active{ color:var(--teal-dark); }
+.nav button.active .ico svg{ stroke:var(--teal); }
+.nav button:active{ transform:scale(.9); }
+/* Center FAB — Doctor (primary action) */
+.nav .fab{
+  flex:0 0 auto; width:54px; height:54px; margin-top:-26px; border-radius:50%;
+  background:linear-gradient(145deg,var(--teal),var(--teal-dark)); color:#fff;
+  display:grid; place-items:center; box-shadow:var(--shadow-teal);
+  border:4px solid rgba(255,255,255,.9);
+}
+.nav .fab svg{ width:24px; height:24px; }
+.nav .fab .lbl{ display:none; }
+
+/* ============ VIDEO MODAL ============ */
+.video-overlay{ position:fixed; inset:0; z-index:100; background:rgba(20,30,30,.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:16px; }
+.video-overlay.show{ display:flex; animation:fadeIn .25s var(--ease); }
+.video-modal{ width:100%; max-width:420px; max-height:90vh; border-radius:var(--r-xl); overflow:hidden; background:#1a2024; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); }
+.video-modal .head{ display:flex; align-items:center; gap:12px; padding:14px 16px; background:#0F1418; color:#fff; }
+.video-modal .head .ic{ width:38px; height:38px; border-radius:var(--r-md); background:rgba(20,184,166,.2); color:var(--teal); display:grid; place-items:center; flex-shrink:0; }
+.video-modal .head .ic svg{ width:20px; height:20px; }
+.video-modal .head .ttl{ flex:1; }
+.video-modal .head .ttl h3{ font-size:14px; color:#fff; }
+.video-modal .head .ttl .sub{ font-size:11px; color:rgba(255,255,255,.6); }
+.video-modal .head .close{ width:32px; height:32px; border-radius:50%; display:grid; place-items:center; color:rgba(255,255,255,.7); background:rgba(255,255,255,.1); }
+.video-modal .head .close svg{ width:18px; height:18px; }
+.video-modal .stage{ position:relative; aspect-ratio:16/9; background:#000; }
+.video-modal .stage video{ width:100%; height:100%; object-fit:contain; }
+.video-modal .gen-state{ position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#fff; padding:20px; text-align:center; background:linear-gradient(160deg, #14B8A6, #0D9488); }
+.video-modal .gen-state .spinner-lg{ width:44px; height:44px; border:4px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; }
+.video-modal .gen-state .gtitle{ font-size:15px; font-weight:700; }
+.video-modal .gen-state .gbody{ font-size:12px; opacity:.85; line-height:1.5; max-width:280px; }
+.video-modal .gen-state .progress{ width:180px; height:5px; background:rgba(255,255,255,.25); border-radius:3px; overflow:hidden; margin-top:4px; }
+.video-modal .gen-state .progress .bar{ height:100%; background:#fff; width:10%; transition:width .8s var(--ease); border-radius:3px; }
+.video-modal .err-state{ position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#fff; padding:20px; text-align:center; background:linear-gradient(160deg, #4A2520, #2A1815); }
+.video-modal .err-state svg{ width:40px; height:40px; color:var(--coral); }
+.video-modal .err-state .etitle{ font-size:15px; font-weight:700; }
+.video-modal .err-state .ebody{ font-size:13px; opacity:.8; line-height:1.5; max-width:300px; }
+.video-modal .foot{ padding:14px 18px; background:#0F1418; }
+.video-modal .foot .cap{ font-size:12px; color:rgba(255,255,255,.7); line-height:1.5; display:flex; gap:8px; align-items:flex-start; }
+.video-modal .foot .cap svg{ width:14px; height:14px; flex-shrink:0; margin-top:1px; color:var(--teal); }
+.video-modal .foot .disclaimer{ font-size:11px; color:rgba(255,255,255,.45); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,.1); line-height:1.5; }
+.video-modal .foot .retry{ margin-top:10px; width:100%; background:var(--teal); color:#fff; }
+
+/* ============ TOAST ============ */
+.toast{ position:fixed; bottom:calc(96px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(20px); z-index:200; padding:12px 22px; border-radius:var(--r-pill); background:rgba(31,41,55,.94); color:#fff; font-size:13px; font-weight:500; box-shadow:var(--shadow-lg); opacity:0; pointer-events:none; transition:opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease); max-width:90vw; text-align:center; }
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ============ RESPONSIVE ============ */
+
+/* ---- Extra-small phones (≤360px): single column, tighter spacing ---- */
+@media (max-width:360px){
+  .grid{ grid-template-columns:1fr; }
+  .quick{ grid-template-columns:1fr; }
+  .hero{ padding:20px 16px 16px; }
+  .hero h1{ font-size:21px; }
+  .screen{ padding:6px 12px 24px; }
+  .sos{ margin:12px 12px 6px; padding:11px 12px; }
+  .hosp-toolbar, .form-card{ padding:18px 14px; }
+  .nav{ width:calc(100% - 16px); }
+}
+
+/* ---- Small phones 361–413px: default layout already tuned ---- */
+
+/* ---- Large phones / small tablets (≥600px): widen frame, breathe ---- */
+@media (min-width:600px){
+  :root{ --maxw:560px; }
+  .hero h1{ font-size:28px; }
+  .hero{ padding:28px 24px 22px; }
+  .grid{ gap:14px; }
+  .card{ padding:20px 16px; }
+  .quick{ gap:14px; }
+  .quick > a{ padding:20px 18px; }
+  .screen{ padding:8px 20px 28px; }
+  .sos{ margin:16px 20px 8px; }
+  .hosp-toolbar, .form-card{ padding:24px 22px; }
+  .header{ padding:12px 20px 14px; }
+}
+
+/* ---- Tablets (≥768px): 2-col grids, wider content ---- */
+@media (min-width:768px){
+  :root{ --maxw:720px; }
+  body{ font-size:0.95rem; }
+  .hero h1{ font-size:30px; }
+  .hero .sub{ font-size:14px; }
+  .grid{ grid-template-columns:repeat(3, 1fr); }
+  .quick{ grid-template-columns:1fr 1fr; }
+  .cpr-meta .cell{ padding:14px 8px; }
+  .cpr-meta .v{ font-size:22px; }
+  .screen{ padding:10px 24px 32px; }
+  .sos{ margin:18px 24px 10px; padding:16px 20px; }
+  .hosp-toolbar, .form-card{ padding:26px 26px; }
+  .header{ padding:14px 24px 16px; }
+  /* Doctor chat bubbles wider on tablet */
+  .msg{ max-width:80%; }
+  /* Hospitals: 2-column list on tablet to use the width */
+  .hosp-list{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+}
+
+/* ---- Desktop (≥1024px): sidebar nav + wide 2-pane content ---- */
+@media (min-width:1024px){
+  :root{ --maxw:1100px; }
+  body{ font-size:1rem; padding-bottom:0; }
+
+  /* App frame becomes a horizontal 2-pane: sidebar | main */
+  .app{
+    max-width:var(--maxw); min-height:100vh;
+    margin:24px auto; border-radius:var(--r-2xl); overflow:hidden;
+    background:rgba(255,255,255,.35); backdrop-filter:blur(6px);
+    box-shadow:var(--shadow-lg);
+    display:grid; grid-template-columns:240px 1fr;
+    padding:0;
+  }
+  /* Sidebar (formerly bottom nav) — vertical, sticky inside app */
+  .nav{
+    position:sticky; top:0; left:auto; bottom:auto;
+    transform:none; height:auto; min-height:100vh;
+    width:auto; grid-column:1; grid-row:1 / span 3;
+    flex-direction:column; justify-content:flex-start; align-items:stretch;
+    gap:6px; padding:24px 16px; border-radius:0;
+    width:240px;
+    border-right:1px solid var(--glass-border); border-bottom:none;
+    box-shadow:none; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  }
+  /* Brand label at the top of the sidebar */
+  .nav::before{
+    content:'FirstMinute'; display:flex; align-items:center; gap:10px;
+    font-weight:700; font-size:16px; color:var(--ink); letter-spacing:-.02em;
+    padding:6px 10px 18px; margin-bottom:6px; border-bottom:1px solid var(--glass-border);
+  }
+  .nav button{ flex:none; flex-direction:row; justify-content:flex-start; gap:12px;
+    padding:12px 14px; font-size:13px; border-radius:var(--r-md); }
+  .nav button.active{ background:var(--teal-soft); color:var(--teal-dark); }
+  .nav button .ico svg{ width:20px; height:20px; }
+  .nav .fab{ width:auto; height:auto; margin:8px 0 0; border-radius:var(--r-md);
+    border:none; align-self:stretch; flex-direction:row; padding:12px 14px; gap:12px;
+    justify-content:flex-start; }
+  .nav .fab .ico{ margin:0; }
+  /* On desktop the FAB is just another sidebar item — show its label */
+  .nav .fab::after{ content:'Doctor'; font-size:13px; font-weight:600; }
+  /* Brand on top of sidebar */
+  .header{ grid-column:2; grid-row:auto; position:sticky; top:0;
+    background:rgba(255,255,255,.6); border-bottom:1px solid var(--glass-border);
+    border-radius:0; }
+  /* Move brand mark into sidebar top; keep header minimal */
+  .header .brand{ display:none; }
+
+  /* Place every direct child except nav in the content column (2) */
+  .app > .header{ grid-column:2; }
+  .app > .sos{ grid-column:2; }
+  .app > .screen{ grid-column:2; }
+  .app > .nav{ grid-column:1; grid-row:1 / span 100; }
+  .app > .video-overlay{ grid-column:1 / span 2; }
+  .toast{ bottom:24px; }
+
+  /* Main content uses multi-column grids on wide canvas */
+  .grid{ grid-template-columns:repeat(4, 1fr); gap:16px; }
+  .quick{ grid-template-columns:1fr 1fr 1fr 1fr; }
+  /* quick currently has 2 items — keep 2 across but wider */
+  .quick{ grid-template-columns:1fr 1fr; }
+  .hero h1{ font-size:32px; }
+  .screen{ padding:14px 32px 40px; }
+  .sos{ margin:20px 32px 12px; }
+  .hosp-list{ grid-template-columns:1fr 1fr; }
+  .chat-input-wrap{ position:sticky; bottom:0; left:auto; right:auto;
+    grid-column:2; max-width:none; width:100%; margin:0; border-radius:0;
+    border-top:1px solid var(--glass-border); }
+  /* Doctor welcome + chat side-by-side on very wide desktop */
+  .cpr-meta .v{ font-size:24px; }
+}
+
+/* ---- Large desktop (≥1440px): cap and centre, 4-col grids ---- */
+@media (min-width:1440px){
+  :root{ --maxw:1280px; }
+  .grid{ grid-template-columns:repeat(4, 1fr); }
+  .hosp-list{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+/* ---- Landscape phones (short height): compress hero + nav ---- */
+@media (max-height:560px) and (orientation:landscape){
+  .hero{ padding:14px 18px 12px; }
+  .hero h1{ font-size:20px; }
+  .hero .sub{ display:none; }
+  .hero .search{ margin-bottom:0; }
+  .sos{ margin:8px 16px 4px; padding:8px 14px; }
+  .sos .nums{ font-size:11px; }
+  .nav{ bottom:calc(8px + env(safe-area-inset-bottom)); padding:6px 10px; }
+  .nav button{ font-size:9px; padding:4px 8px; }
+  .nav .fab{ width:46px; height:46px; margin-top:-20px; }
+  .chat-input-wrap{ bottom:calc(64px + env(safe-area-inset-bottom)); }
+  body{ padding-bottom:calc(80px + env(safe-area-inset-bottom)); }
+}
+
+/* ---- Print: hide nav/sos, show clean content ---- */
+@media print{
+  .nav, .sos, .chat-input-wrap, .video-overlay, .toast{ display:none !important; }
+  body{ background:#fff; padding:0; }
+  .app{ box-shadow:none; margin:0; max-width:100%; }
+  .screen{ padding:0 12px; }
+  .hero, .form-card, .hosp-toolbar, .detail-hero{ box-shadow:none; border:1px solid #ccc; backdrop-filter:none; background:#fff; }
+}
+
+/* ---- Reduced motion: disable animations ---- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  .brand .mark .ping, .rem .pulse-dot::after, .cpr-stage.running .heart, .video-btn.loading{ animation:none !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="header">
+  <div class="row">
+    <button class="icon-btn back" id="backBtn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="brand">
+      <span class="mark">
+        <span class="ping"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+      </span>
+      <span id="brandText">FirstMinute</span>
+    </div>
+    <div class="title" id="screenTitle"></div>
+  </div>
+</header>
+
+<div class="sos">
+  <div class="nums">National Emergency <b>112</b> · LASAMBUS <b>767</b></div>
+  <a class="call" href="tel:112">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Call 112
+  </a>
+</div>
+
+<!-- ===== HOME ===== -->
+<main class="screen active" id="screen-home">
+  <div class="hero">
+    <h1>What's the emergency?</h1>
+    <div class="sub">Tap a category below or describe what's happening in your own words.</div>
+    <div class="search">
+      <span class="lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input id="searchInput" type="text" placeholder="e.g. 'my child swallowed bleach'" autocomplete="off">
+      <button class="voice" id="voiceBtn" aria-label="Voice input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+      </button>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <div class="quick">
+    <a class="cpr" href="#" onclick="openCPR();return false;">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div class="lbl">CPR Assistant</div>
+      <div class="desc">100–120 bpm rhythm</div>
+    </a>
+    <a class="quick-hosp" href="#" onclick="go('hospitals');return false;">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg></div>
+      <div class="lbl">Find Hospital</div>
+      <div class="desc">30 Nigerian centres</div>
+    </a>
+    <a class="quick-camera" href="#" onclick="go('camera');return false;">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      <div class="lbl">Camera Aid</div>
+      <div class="desc">Capture an injury on this device</div>
+    </a>
+  </div>
+
+  <div class="section">Emergency Categories <span class="count" id="catCount"></span></div>
+  <div class="grid" id="catGrid"></div>
+
+  <div class="disclaimer">
+    <b>Important</b>
+    FirstMinute provides general first-aid guidance for lay responders. It is <b>not a substitute for professional medical care</b>. Always call 112 for serious or life-threatening situations. Decisions about medication or invasive procedures should be left to trained responders.
+  </div>
+</main>
+
+<!-- ===== DETAIL ===== -->
+<main class="screen" id="screen-detail">
+  <div id="detailContent"></div>
+</main>
+
+<!-- ===== CPR ===== -->
+<main class="screen" id="screen-cpr">
+  <div class="cpr-stage" id="cprStage">
+    <div class="heart">
+      <span class="ring"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <div class="phase" id="cprPhase">Ready to start</div>
+    <div class="bpm"><b id="cprBpm">110</b>compressions per minute</div>
+    <div class="cpr-meta">
+      <div class="cell"><div class="v" id="cprCompressions">0</div><div class="l">Compressions</div></div>
+      <div class="cell"><div class="v" id="cprCycles">0</div><div class="l">Cycles · 30:2</div></div>
+      <div class="cell"><div class="v" id="cprTime">0:00</div><div class="l">Elapsed</div></div>
+    </div>
+    <div class="cpr-controls">
+      <button class="btn primary" id="cprStart">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span id="cprStartLabel">Start</span>
+      </button>
+      <button class="btn outline icon-only" id="cprReset" aria-label="Reset">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="callout info">
+    <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/></svg></span>
+    <div class="body"><b>How to do CPR</b>Place the heel of one hand in the centre of the chest (lower breastbone), other hand on top, interlock fingers. Push down 5–6 cm at 100–120 beats/min. After 30 compressions give 2 rescue breaths (if trained). Continue until help arrives. Untrained? Do hands-only CPR.</div>
+  </div>
+  <div class="callout warn">
+    <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></span>
+    <div class="body"><b>Posture aid</b>Open your phone camera beside the patient so you can see your arms and their chest. Shoulders directly over hands, arms straight. The metronome keeps the rhythm.</div>
+  </div>
+  <div class="disclaimer">
+    <b>CPR is for adults</b>
+    For children use one hand, for infants two fingers — be gentler. This assistant guides adult CPR. Take a certified First Aid course when you can.
+  </div>
+</main>
+
+<!-- ===== HOSPITALS ===== -->
+<main class="screen" id="screen-hospitals">
+  <div class="hosp-toolbar">
+    <h3>Find a Hospital</h3>
+    <div class="sub">Major Nigerian teaching hospitals & FMCs, sorted by distance from you.</div>
+    <button class="btn primary" id="locateBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Use my location
+    </button>
+    <div class="search-inline">
+      <span class="lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input id="hospSearch" type="text" placeholder="Search by name or state…">
+    </div>
+    <div class="chips" id="stateFilters"></div>
+  </div>
+  <div class="hosp-list" id="hospitalList"></div>
+  <div class="disclaimer">
+    <b>Always call ahead</b>
+    Phone numbers and bed availability change. Ringing ahead lets the hospital prepare and tell you the fastest route. For life-threatening emergencies, dial 112 first.
+  </div>
+</main>
+
+<!-- ===== REPORT ===== -->
+<main class="screen" id="screen-report">
+  <div class="form-card">
+    <h3>Incident Report</h3>
+    <div class="sub">Capture what happened and what you've done — the app builds a short report you can send to a hospital or relative.</div>
+    <div class="field"><label>Reporter name</label><input id="repName" type="text" placeholder="Your name"></div>
+    <div class="field"><label>Patient (name / age / sex, if known)</label><input id="repPatient" type="text" placeholder="e.g. Adamu, ~45, male"></div>
+    <div class="field"><label>Emergency type</label><select id="repType"></select></div>
+    <div class="field"><label>Location of incident</label><input id="repLocation" type="text" placeholder="Address / landmark / LGA"></div>
+    <div class="field"><label>What happened (briefly)</label><textarea id="repWhat" placeholder="e.g. Victim collapsed while working in the sun. Unresponsive ~2 min."></textarea></div>
+    <div class="field"><label>Observed symptoms</label><textarea id="repSymptoms" placeholder="e.g. Not breathing normally, pale skin, no response."></textarea></div>
+    <div class="field">
+      <label>Apparent severity</label>
+      <div class="sev-picker">
+        <label><input type="radio" name="sev" value="Critical"><span>🔴 Critical</span></label>
+        <label><input type="radio" name="sev" value="Serious" checked><span>🟠 Serious</span></label>
+        <label><input type="radio" name="sev" value="Moderate"><span>🟡 Moderate</span></label>
+      </div>
+    </div>
+    <div class="field"><label>First-aid actions taken</label><textarea id="repActions" placeholder="e.g. Started CPR (~3 min). Moved to shade. Loosened clothing."></textarea></div>
+    <div class="field"><label>Time of incident</label><input id="repTime" type="datetime-local"></div>
+    <button class="btn primary" onclick="buildReport()">Build report</button>
+  </div>
+  <div id="reportOut" style="display:none;">
+    <div class="section">Preview</div>
+    <div class="report-preview" id="reportPreview"></div>
+    <div class="btn-row"><button class="btn success" onclick="shareReport('whatsapp')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>WhatsApp</button></div>
+    <div class="btn-row"><button class="btn outline" onclick="shareReport('sms')">SMS</button><button class="btn outline" onclick="shareReport('email')">Email</button></div>
+    <button class="btn ghost" onclick="shareReport('copy')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy text
+    </button>
+  </div>
+</main>
+
+<!-- ===== CAMERA ===== -->
+<main class="screen" id="screen-camera">
+  <div class="form-card">
+    <h3>Camera Aid</h3>
+    <div class="sub">Frame a wound or burn to capture it for your incident report. The crosshair helps keep the camera steady and centred. The image stays on your device.</div>
+    <div class="cam-wrap" id="camWrap">
+      <video id="camVideo" autoplay playsinline></video>
+      <div class="cam-overlay"><div class="frame"><div class="corners"></div></div></div>
+      <button class="cam-capture" id="camCapture" aria-label="Capture"></button>
+    </div>
+    <div class="cam-result" id="camResult"></div>
+    <div class="btn-row">
+      <button class="btn primary" id="camStartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Start camera
+      </button>
+      <button class="btn outline icon-only" id="camClearBtn" style="display:none;" aria-label="Clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="callout info">
+    <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/></svg></span>
+    <div class="body"><b>How to frame a wound</b>1. If safe, gently remove clothing around the wound. 2. Hold the camera ~30 cm away, directly above. 3. Fill the white frame with the wound and a small margin of healthy skin. 4. Keep still; good light helps.</div>
+  </div>
+  <div class="callout warn">
+    <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></span>
+    <div class="body"><b>This is not a diagnosis</b>The image is captured for your own record and to share with a hospital. It does <b>not</b> tell you the type or severity of the injury. A trained clinician must assess it.</div>
+  </div>
+</main>
+
+<!-- ===== REMINDERS ===== -->
+<main class="screen" id="screen-reminders">
+  <div class="form-card">
+    <h3>Follow-up Reminders</h3>
+    <div class="sub">Schedule a check-in for the patient. The app alerts you even when closed (requires notifications enabled).</div>
+    <div class="field"><label>Patient name</label><input id="remName" type="text" placeholder="e.g. Adamu"></div>
+    <div class="field"><label>What to check</label><input id="remNote" type="text" placeholder="e.g. Is bleeding controlled? Is he responsive?"></div>
+    <div class="field"><label>Remind me in</label>
+      <select id="remWhen">
+        <option value="15">15 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="60" selected>1 hour</option>
+        <option value="180">3 hours</option>
+        <option value="720">12 hours</option>
+        <option value="1440">24 hours</option>
+      </select>
+    </div>
+    <button class="btn primary" onclick="addReminder()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Set reminder
+    </button>
+    <button class="btn outline" onclick="enableNotif()" style="margin-top:8px;">Enable notifications</button>
+  </div>
+  <div class="section">Active reminders <span class="count" id="remCount"></span></div>
+  <div class="rem-list" id="reminderList"></div>
+</main>
+
+<!-- ===== AI DOCTOR ===== -->
+<main class="screen" id="screen-doctor">
+  <div class="chat-wrap">
+    <div class="chat-intro">
+      <div class="row">
+        <div class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M5 5l3 3M2 12h4M5 19l3-3M12 22v-4M19 19l-3-3M22 12h-4M19 5l-3 3"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div>
+          <h2>FirstMinute Doctor</h2>
+          <div class="tag"><span class="live"></span>AI on-site doctor</div>
+        </div>
+      </div>
+      <p>Tell the doctor what's happening. Describe symptoms, age, what caused it, and what you have on hand. In a life-threatening emergency, call 112 first — the doctor will guide you while you wait.</p>
+      <div class="chips-prompt" id="docChips"></div>
+    </div>
+
+    <div class="chat-status idle" id="chatStatus" style="display:none;">
+      <span class="spinner" id="chatSpinner" style="display:none;"></span>
+      <span id="chatStatusText"></span>
+    </div>
+
+    <div class="chat-msgs" id="chatMsgs"></div>
+
+    <div class="chat-suggestions" id="chatSuggestions" style="display:none;"></div>
+  </div>
+
+  <div class="chat-input-wrap">
+    <textarea id="chatInput" rows="1" placeholder="Describe the emergency…" autocomplete="off"></textarea>
+    <button class="chat-send" id="chatSend" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</main>
+
+<nav class="nav">
+  <button class="active" data-nav="home" onclick="go('home')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H10v7H4a1 1 0 0 1-1-1z"/></svg></span>Home</button>
+  <button data-nav="hospitals" onclick="go('hospitals')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9h.01M9 12h.01M9 15h.01M9 18h.01"/></svg></span>Hospitals</button>
+  <button class="fab" data-nav="doctor" onclick="go('doctor')" aria-label="AI Doctor"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M5 5l3 3M2 12h4M5 19l3-3M12 22v-4M19 19l-3-3M22 12h-4M19 5l-3 3"/><circle cx="12" cy="12" r="3"/></svg></span></button>
+  <button data-nav="report" onclick="go('report')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>Report</button>
+  <button data-nav="reminders" onclick="go('reminders')"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Reminders</button>
+</nav>
+</div>
+
+<!-- AI Video Walkthrough Modal -->
+<div class="video-overlay" id="videoOverlay">
+  <div class="video-modal">
+    <div class="head">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+      <div class="ttl"><h3 id="videoModalTitle">AI Video Walkthrough</h3><div class="sub" id="videoModalSub"></div></div>
+      <button class="close" onclick="closeVideoModal()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="stage" id="videoStage">
+      <video id="videoPlayer" controls playsinline preload="metadata" style="display:none;"></video>
+      <div class="gen-state" id="videoGenState" style="display:none;">
+        <div class="spinner-lg"></div>
+        <div class="gtitle" id="videoGenTitle">Generating AI video…</div>
+        <div class="gbody" id="videoGenBody">The AI is creating a short visual demonstration. This takes about a minute the first time — then it's saved for instant replay.</div>
+        <div class="progress"><div class="bar" id="videoProgressBar"></div></div>
+      </div>
+      <div class="err-state" id="videoErrState" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div class="etitle" id="videoErrTitle">Couldn't generate the video</div>
+        <div class="ebody" id="videoErrBody">The AI service is busy. Follow the written steps above and call 112 if it's an emergency.</div>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span id="videoCaption"></span></div>
+      <div class="disclaimer">AI-generated for visual guidance only. It uses training props and demonstrations, not real injuries. It does not replace the written steps, the AI doctor, or professional care.</div>
+      <button class="btn outline retry" id="videoRetryBtn" onclick="retryVideo()" style="display:none;">Try again</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+
+/* ===== EMERGENCY DATA =====
+   Guidance based on Red Cross / WHO lay first-aid principles.
+   Always call 112 for serious or life-threatening emergencies. */
+const EMERGENCIES = [
+{
+  id:'cpr', icon:'🫀', name:'Cardiac Arrest / CPR', sev:'high', cls:'severe',
+  tags:['cpr','cardiac','heart','collapse','not breathing','unconscious','no pulse','drown'],
+  what:'The person has collapsed, is unresponsive and is not breathing normally. Brain damage can start within 4 minutes without help.',
+  danger:'Call 112 IMMEDIATELY and ask for an ambulance with an AED (defibrillator). Then start CPR.',
+  steps:[
+    {t:'Check for danger and response', d:'Make sure the scene is safe (traffic, fire, electricity). Tap the shoulders and shout "Are you OK?". No response = start now.'},
+    {t:'Call 112 & get an AED', d:'If someone is with you, send them to call 112 and find a defibrillator (AED). If you are alone, call 112, put the phone on speaker, and start CPR.'},
+    {t:'Open the airway', d:'Tilt the head back gently and lift the chin. Look in the mouth — if there is obvious vomit or an object, sweep it out with a finger.'},
+    {t:'Check breathing (10 sec max)', d:'Look at the chest for movement, listen and feel for breath. Occasional gasps do NOT count as breathing. If not breathing normally, start CPR.'},
+    {t:'Start chest compressions', d:'Place the heel of one hand in the centre of the chest (lower breastbone), other hand on top, interlock fingers. Push down 5–6 cm, 100–120 per minute. Let the chest come all the way back up between compressions.'},
+    {t:'Give 2 rescue breaths (if trained)', d:'After 30 compressions, pinch the nose, seal your mouth over theirs, and blow steadily for 1 second each. Watch the chest rise. If untrained or unwilling, do hands-only CPR (just keep compressing).'},
+    {t:'Keep going', d:'Continue 30 compressions : 2 breaths until: the person breathes normally, an AED arrives, or help takes over. Use the CPR Assistant below for the rhythm.'},
+    {t:'Use an AED if available', d:'Turn it on and follow the spoken instructions. It is safe to use on a wet chest — just dry it quickly first. Do not touch the person when it is shocking.'}
+  ],
+  alts:[
+    {need:'No CPR mask for rescue breaths', use:'Hands-only CPR is just as effective for the first minutes. Keep compressing — do not stop to look for a mask.'},
+    {need:'Nothing to harden the surface', use:'CPR on a bed is less effective. If you cannot move them, slide a board, tray or folded cloth under the upper back. A firm floor is best.'},
+    {need:'No timer', use:'Use the CPR Assistant in this app — it counts compressions, cycles and time.'}
+  ],
+  cta:true
+},
+{
+  id:'bleeding', icon:'🩸', name:'Cuts & Bleeding', sev:'med', cls:'warn',
+  tags:['bleeding','cut','wound','blood','laceration','deep cut','amputation'],
+  what:'Bleeding from a cut, wound or injury. Heavy bleeding can be life-threatening within minutes.',
+  danger:'Call 112 if: blood is spurting; you cannot stop it after 10 minutes of firm pressure; the wound is very deep, on the neck or chest; or a body part is amputated.',
+  steps:[
+    {t:'Protect yourself', d:'Wash your hands or wear gloves if available. This protects you and the patient from infection.'},
+    {t:'Apply firm pressure', d:'Use a clean cloth, gauze or clothing and press firmly directly on the wound. Do not lift to check — keep pressing.'},
+    {t:'Add layers, do not remove', d:'If the cloth soaks through, add more on top. Removing the first cloth pulls away the clot that is forming.'},
+    {t:'Keep the limb raised', d:'If a limb is bleeding, raise it above the level of the heart once the wound is covered. This slows the flow.'},
+    {t:'Bandage firmly', d:'Once bleeding eases, wrap a bandage or strip of cloth firmly over the dressing to hold it in place. Not so tight that fingers go blue or numb.'},
+    {t:'Treat for shock', d:'Lay the person down and raise their legs if they feel faint, pale or cold. Keep them warm and calm. Do not give food or drink.'},
+    {t:'For amputation', d:'Find the body part, rinse gently, wrap in clean cloth, put in a sealed plastic bag, then place that bag in ice water. Bring it to hospital with the patient.'}
+  ],
+  alts:[
+    {need:'No sterile gauze', use:'Use any clean cotton cloth — a freshly washed T-shirt, wrapper, or clean tissue. Clean cloth is far better than nothing.'},
+    {need:'No bandage', use:'Tie a strip of cloth, a folded gele / wrapper, or even a clean shoelace. Pressure on the dressing matters more than the material.'},
+    {need:'No gloves', use:'Use a clean plastic bag over your hands. Wash thoroughly afterwards.'},
+    {need:'No ice for amputated part', use:'Keep it cool with wet cloth — do NOT put the part directly on ice or in water. Keep it dry inside a sealed bag.'}
+  ]
+},
+{
+  id:'burns', icon:'🔥', name:'Burns & Scalds', sev:'med', cls:'warn',
+  tags:['burn','scald','fire','hot water','steam','boil','flame','chemical'],
+  what:'Skin damaged by heat (fire, hot water, steam), electricity or chemicals.',
+  danger:'Call 112 for: burns larger than the palm of the hand, burns to the face, hands, feet, groin, or airway, chemical burns, electrical burns, or burns to a child or elderly person.',
+  steps:[
+    {t:'Stop the burning', d:'Move the person away from the source. If clothes are on fire, drop and roll or smother with a heavy cloth. Switch off electricity for electrical burns.'},
+    {t:'Cool with running water', d:'Hold the burn under cool (not ice-cold) running water for at least 20 minutes. This stops the burn going deeper and eases pain. Do this within 3 hours of the burn.'},
+    {t:'Remove tight items', d:'Gently remove rings, watches, belts and tight clothing near the burn BEFORE it swells. Do not pull off anything stuck to the skin.'},
+    {t:'Do NOT apply toothpaste, palm oil, eggs or flour', d:'These old remedies trap heat and cause infection. Only cool water and a clean covering.'},
+    {t:'Cover loosely', d:'After cooling, cover with cling film (not tight) or a clean non-fluffy cloth. This protects the skin and reduces pain.'},
+    {t:'Give water to drink if conscious', d:'Small sips of clean water help if the burn is large. Do not give alcohol.'},
+    {t:'For chemical burns', d:'Brush off dry chemicals first, then flood with cool running water for at least 20 minutes. Remove contaminated clothing carefully.'}
+  ],
+  alts:[
+    {need:'No running water', use:'Soak a clean cloth in cool water and lay it over the burn, re-wetting often. Any clean cool water source — bowl, bottle, jerrycan — works.'},
+    {need:'No cling film', use:'Use a clean, non-fluffy cloth or a freshly washed pillowcase. Avoid cotton wool or anything that sheds fibres.'},
+    {need:'No running water for chemicals', use:'Pour large amounts of any clean water over the area for a long time. The volume of water matters more than the source.'}
+  ]
+},
+{
+  id:'head', icon:'🤕', name:'Head Injury', sev:'high', cls:'severe',
+  tags:['head','skull','concussion','hit head','fell on head','unconscious after fall'],
+  what:'A blow to the head. Even without visible bleeding, the brain can be injured.',
+  danger:'Call 112 immediately if the person: lost consciousness, vomits more than once, has a seizure, cannot remember the injury, complains of severe headache, has unequal pupils, or fluid/blood from nose or ears.',
+  steps:[
+    {t:'Check response and breathing', d:'If not responsive and not breathing normally, start CPR. If responsive, keep them still.'},
+    {t:'Keep the head and neck still', d:'Do not move the person if you suspect neck injury. Hold the head in the position you found it.'},
+    {t:'Apply cold compress', d:'For a bump, hold a cold wet cloth or ice wrapped in cloth on the area for 15–20 minutes. Do not put ice directly on skin.'},
+    {t:'Control any bleeding', d:'Press firmly with a clean cloth on any scalp wound. The scalp bleeds a lot — pressure usually stops it.'},
+    {t:'Do not clean deep wounds', d:'Do not probe or push anything into a deep head wound. Cover it lightly and seek care.'},
+    {t:'Watch for danger signs', d:'For the next 24 hours, watch for: worsening headache, repeated vomiting, confusion, slurred speech, weakness in arms/legs, drowsiness, fits. Any of these = go to hospital now.'},
+    {t:'Rest and no alcohol', d:'Rest for 24–48 hours. No alcohol, no strenuous activity. An adult should check on the person every couple of hours through the night.'}
+  ],
+  alts:[
+    {need:'No ice pack', use:'A cloth soaked in cool water, a cold bottle, or frozen food wrapped in cloth all work. Apply for 15–20 minutes.'},
+    {need:'No clean dressing for scalp wound', use:'Use any clean cloth. The scalp bleeds heavily — firm pressure for 10 minutes usually controls it.'},
+    {need:'No one to watch at night', use:'Do not leave the person alone. If nobody can wake them every 2 hours, take them to hospital for observation.'}
+  ]
+},
+{
+  id:'fracture', icon:'🦴', name:'Falls & Fractures', sev:'med', cls:'warn',
+  tags:['fracture','broken bone','fall','sprain','twisted','dislocation','cannot move limb'],
+  what:'A broken or cracked bone, or a bad sprain, often from a fall. It can be hard to tell a break from a sprain without an X-ray.',
+  danger:'Call 112 if: the bone is visible or poking out, the limb looks bent or twisted, the person cannot move, or the injury is to the neck, back, hip or thigh.',
+  steps:[
+    {t:'Keep the person still', d:'Do not move them if you suspect a spine, neck, hip or thigh injury unless they are in immediate danger. Support the injured part as found.'},
+    {t:'Control any bleeding', d:'If bone is visible or there is a wound, press around (not on) the wound with a clean cloth. Do not push the bone back in.'},
+    {t:'Immobilise the limb', d:'Keep it in the position you found it. Pad around it with cloth and support with a rolled newspaper, stick or board tied gently above and below the break.'},
+    {t:'Apply cold', d:'A cold wet cloth or ice wrapped in cloth on the area for 15–20 minutes reduces swelling and pain.'},
+    {t:'Raise the limb if possible', d:'If it does not cause more pain and you are sure it is not a spine/neck injury, raise the injured limb above the heart.'},
+    {t:'Treat for shock', d:'Keep the person warm and calm. Lay them down and raise legs if they feel faint.'},
+    {t:'Get to hospital', d:'All suspected fractures need an X-ray. Move the person carefully — splint first, then transport.'}
+  ],
+  alts:[
+    {need:'No splint', use:'Roll a newspaper, magazine, or stick and pad with cloth. Tie above AND below the break with strips of cloth, not tightly.'},
+    {need:'No bandage', use:'Use strips of cloth — a torn wrapper, scarf or shoelace. Tie firmly enough to hold the limb still, but not so tight fingers go blue.'},
+    {need:'No ice', use:'A cloth soaked in cool water works. Avoid very cold items directly on swollen skin.'},
+    {need:'No rigid support for arm', use:'Tuck the arm into a folded cloth sling against the body — the body itself becomes the splint.'}
+  ]
+},
+{
+  id:'poisoning', icon:'☠️', name:'Poisoning', sev:'high', cls:'severe',
+  tags:['poison','swallow','drank','kerosene','bleach','detergent','tablet','overdose','insecticide','rat poison'],
+  what:'Swallowing, breathing in or absorbing something harmful — kerosene, bleach, detergent, rat poison, insecticide, wrong tablets, or overdose.',
+  danger:'Call 112 OR the nearest Poison Centre IMMEDIATELY. Do NOT make the person vomit unless told to by a professional. Take the container/bottle to hospital.',
+  steps:[
+    {t:'Make the scene safe', d:'Move the person away from the source (e.g. out of a room with fumes). Do not put yourself at risk.'},
+    {t:'Call 112 / Poison Centre', d:'In Nigeria, call 112. If the product is known, take the bottle/label with you. If a Poison Centre is available, call them.'},
+    {t:'Wipe the mouth', d:'Wipe out any remaining substance from the mouth with a cloth. Do NOT rinse heavily in case they inhale it.'},
+    {t:'Do NOT induce vomiting', d:'This is critical: do NOT give salt water, do NOT put fingers down the throat. For kerosene, fuel and corrosives, vomiting causes MORE damage to the lungs and throat.'},
+    {t:'Do NOT give milk or water (yet)', d:'Only give fluids if a Poison Centre or doctor tells you to. The wrong fluid can speed up absorption of some poisons.'},
+    {t:'Keep the container', d:'Bring the bottle, wrapper, leaves or tablets to the hospital. This is the most useful thing you can do.'},
+    {t:'If unconscious but breathing', d:'Place in the recovery position (on their side) and watch breathing. Be ready to start CPR.'}
+  ],
+  alts:[
+    {need:'Cannot reach 112', use:'Go straight to the nearest Teaching Hospital or Federal Medical Centre with the container. Do not wait.'},
+    {need:'Chemical on skin', use:'Remove contaminated clothing and flood the skin with cool running water for 15–20 minutes.'},
+    {need:'Poison in the eyes', use:'Rinse the eye gently with clean cool water for at least 15 minutes, eyelids open. Then go to hospital.'},
+    {need:'Inhaled poison (fumes, generator smoke, gas)', use:'Move the person to fresh air immediately. If not breathing, start CPR after moving to safety.'}
+  ]
+},
+{
+  id:'snake', icon:'🐍', name:'Snake Bite', sev:'high', cls:'severe',
+  tags:['snake','bite','snakebite','python','cobra','viper','fang'],
+  what:'Bite from a snake. Some Nigerian snakes (carpet viper, cobra, puff adder) are venomous and need urgent treatment with antivenom.',
+  danger:'Go to hospital IMMEDIATELY — even if you feel fine at first. Antivenom works best early. Call 112 or arrange urgent transport.',
+  steps:[
+    {t:'Move away from the snake', d:'Step back calmly. Do not chase or try to kill the snake — a second bite is worse.'},
+    {t:'Keep the person calm and still', d:'Movement spreads venom faster. Sit or lie down with the bitten limb below heart level if possible.'},
+    {t:'Remove tight items', d:'Take off rings, watches, shoes and tight clothing near the bite — swelling will follow.'},
+    {t:'Wash gently with water', d:'Rinse the bite with clean water and soap. Do not rub or cut the wound.'},
+    {t:'Immobilise the limb', d:'Splint the bitten limb as for a fracture, loosely. Keep it still. The less movement, the slower the venom spreads.'},
+    {t:'Do NOT cut, suck, or apply a tourniquet', d:'These old methods cause more harm — tissue damage, infection, and they do not stop venom. Modern guidelines are against them.'},
+    {t:'Note the time and symptoms', d:'Write down the time of the bite and watch for: swelling, bleeding gums, drooping eyelids, difficulty breathing, drowsiness. Tell the hospital all of this.'},
+    {t:'Get to hospital fast', d:'Antivenom is the only specific treatment. Carry the person if possible. Do not let them walk.'}
+  ],
+  alts:[
+    {need:'No splint', use:'Roll a newspaper, stick or piece of cloth around the limb. Movement spreads venom — keeping still is the priority.'},
+    {need:'No transport', use:'Carry the person on a chair, plank or stretcher. Avoid them walking. Bystanders will usually help.'},
+    {need:'No phone to call ahead', use:'Send someone ahead to warn the hospital so antivenom can be prepared. Note the bite time and symptoms on paper.'},
+    {need:'Do not know the snake', use:'Do NOT try to catch it. A photo from a safe distance helps doctors — but treatment is based on symptoms, not the snake type.'}
+  ]
+},
+{
+  id:'scorpion', icon:'🦂', name:'Scorpion Sting', sev:'med', cls:'warn',
+  tags:['scorpion','sting','stung','venom','insect sting','wasp','bee'],
+  what:'Sting from a scorpion or stinging insect. Most are painful but not dangerous; some Nigerian scorpions can cause serious symptoms.',
+  danger:'Go to hospital if: the person is a child, the sting is on the face or neck, or there is difficulty breathing, drooling, sweating, twitching, vomiting or drowsiness.',
+  steps:[
+    {t:'Move to safety', d:'Step away from the scorpion. If you can safely kill or trap it, do — but do not risk a second sting.'},
+    {t:'Wash the sting with soap and water', d:'Clean the area gently to remove venom on the skin.'},
+    {t:'Apply a cold compress', d:'Ice or a cold wet cloth wrapped in cloth, on the sting for 10–15 minutes. This eases pain and slows venom.'},
+    {t:'Keep the limb still and raised', d:'Movement spreads venom. Keep the bitten limb still, ideally raised above heart level.'},
+    {t:'Give simple pain relief', d:'Paracetamol helps pain. Do NOT give aspirin or ibuprofen — they may worsen bleeding with some stings.'},
+    {t:'Watch for danger signs', d:'Look out for: drooling, sweating, blurred vision, muscle twitching, difficulty breathing, vomiting — especially in children. Go to hospital immediately.'},
+    {t:'Do NOT cut or suck the sting', d:'Do not try to suck out venom or cut the wound. It does not help and causes infection.'}
+  ],
+  alts:[
+    {need:'No ice', use:'Cloth soaked in cool water, a cold bottle, or wet mud wrapped in cloth. Apply for 10–15 minutes.'},
+    {need:'No paracetamol', use:'A cold compress and rest are the main treatment. Avoid home brews — alcohol and local mixtures can worsen symptoms.'},
+    {need:'Bee sting with stinger left in', use:'Scrape the stinger out sideways with a card or fingernail. Do not squeeze with tweezers — that pushes more venom in.'}
+  ]
+},
+{
+  id:'choking', icon:'😮‍💨', name:'Choking', sev:'high', cls:'severe',
+  tags:['choking','choked','cannot breathe','food stuck','object in throat','clutching throat'],
+  what:'Something is blocking the airway — usually food. The person cannot speak, cough or breathe.',
+  danger:'Act FAST — brain damage starts within minutes. If they become unconscious, call 112 and start CPR.',
+  steps:[
+    {t:'Ask "Are you choking?"', d:'If they can cough, encourage them to cough hard. Do not interfere. If they cannot speak, cough or breathe — act now.'},
+    {t:'Lean them forward', d:'Bend the person forward at the waist. Support the chest with one hand.'},
+    {t:'Give 5 back blows', d:'With the heel of your hand, give up to 5 firm blows between the shoulder blades. Check the mouth after each.'},
+    {t:'Give 5 abdominal thrusts (Heimlich)', d:'Stand behind, place a fist above the navel, grasp with the other hand, and pull sharply in and up. Repeat up to 5 times.'},
+    {t:'Alternate back blows and thrusts', d:'Keep alternating 5 back blows and 5 thrusts until the object comes out or they collapse.'},
+    {t:'If they become unconscious', d:'Call 112. Lower them carefully to the ground, start CPR. Each time you open the airway, check the mouth and remove any object you can see.'},
+    {t:'See a doctor afterwards', d:'Even if the object comes out, abdominal thrusts can cause internal injury. Get checked at a hospital.'}
+  ],
+  alts:[
+    {need:'Person is alone and choking', d:'Make a fist above your navel, or press your upper abdomen over the back of a chair, and thrust in and up.'},
+    {need:'Person is obese or pregnant', d:'Use chest thrusts instead: place your hands in the centre of the chest (as for CPR) and push sharply.'},
+    {need:'Infant under 1 year', d:'Hold face-down along your forearm, head lower than chest. Give 5 back blows. Turn face-up, give 5 chest thrusts with two fingers. Never do abdominal thrusts on a baby.'},
+    {need:'No phone to call 112', d:'Shout to attract help. Bystanders can call. Keep doing back blows and thrusts.'}
+  ]
+},
+{
+  id:'heat', icon:'🌡️', name:'Heat Stroke', sev:'high', cls:'severe',
+  tags:['heat','sun','hot','dehydration','fainted','heatstroke','overheated','heat exhaustion'],
+  what:'Body overheating, common in Nigeria\'s hot season. Heat exhaustion is mild; heat stroke (confusion, no sweat, very high temperature) is a medical emergency.',
+  danger:'Call 112 if the person is confused, unconscious, has a fit, stops sweating despite the heat, or has a very high temperature.',
+  steps:[
+    {t:'Move to a cool place', d:'Get the person into shade or a cool room. Lie them down with legs raised.'},
+    {t:'Remove excess clothing', d:'Loosen or remove tight and heavy clothing to help cooling.'},
+    {t:'Cool the body', d:'Fan them and sponge with cool water. Pay special attention to neck, armpits and groin. A wet cloth on these areas cools fastest.'},
+    {t:'Give fluids if conscious', d:'Small sips of clean water or ORS (oral rehydration salts). Do not give alcohol or very sweet drinks.'},
+    {t:'Watch for heat stroke', d:'If confused, hot but dry, unconscious, or fitting — this is heat stroke. Call 112. Cool aggressively with water and fanning while waiting.'},
+    {t:'Do not use ice baths carelessly', d:'Very cold immersion can be dangerous for the elderly. Use cool (not ice) water and fanning for them.'},
+    {t:'Rest afterwards', d:'Even after recovery, rest for 24 hours. Avoid sun and heavy work. Drink extra fluids.'}
+  ],
+  alts:[
+    {need:'No ORS sachet', use:'Mix 1 litre of clean water with 6 level teaspoons of sugar and half a teaspoon of salt. This homemade ORS saves lives.'},
+    {need:'No air conditioning', use:'A wet cloth on neck, armpits and groin plus hand fanning works well. Move to the coolest, shadiest spot available.'},
+    {need:'No fan', use:'Any flat object — carton, tray, cloth — moved back and forth creates airflow. Keep the wet cloth on.'},
+    {need:'No thermometer', use:'Treat by symptoms: hot, dry, red skin with confusion or unconsciousness = heat stroke. Cool them now.'}
+  ]
+},
+{
+  id:'stroke', icon:'🧠', name:'Stroke', sev:'high', cls:'severe',
+  tags:['stroke','face drooping','slurred speech','weak arm','brain','FAST','paralysis'],
+  what:'A block or bleed in the brain. The faster the person reaches hospital, the more brain can be saved.',
+  danger:'Call 112 IMMEDIATELY. Note the time symptoms started. Treatment is most effective within 3–4 hours.',
+  steps:[
+    {t:'Do the FAST check', d:'F = Face: ask them to smile — does one side droop? A = Arms: can they raise both and keep them up? S = Speech: is their speech slurred or odd? T = Time: call 112 now.'},
+    {t:'Call 112 immediately', d:'Say "I think this is a stroke". Tell them the time symptoms started — this is the single most important fact for treatment.'},
+    {t:'Keep them comfortable', d:'Help them sit or lie with head and shoulders slightly raised. Do not move them more than needed.'},
+    {t:'Loosen tight clothing', d:'Undo collar, ties, belts to ease breathing.'},
+    {t:'Do NOT give food, drink or medicine', d:'Stroke can affect swallowing. Giving anything by mouth risks choking. Wait for medical help.'},
+    {t:'Watch breathing', d:'If they become unconscious, check breathing. If not breathing normally, start CPR.'},
+    {t:'Reassure and stay', d:'Stay with them, keep them calm. Note any change in symptoms and tell the hospital.'}
+  ],
+  alts:[
+    {need:'Cannot reach 112', use:'Get to the nearest Teaching Hospital with a CT scanner as fast as possible. Time is brain — every minute matters.'},
+    {need:'No transport', use:'Ask neighbours, a church/mosque vehicle, or a taxi. Stroke is an emergency — most people will help.'},
+    {need:'Not sure it is a stroke', use:'If any FAST sign is present, treat it as a stroke. It is far better to be wrong than to delay.'}
+  ]
+},
+{
+  id:'seizure', icon:'🌀', name:'Seizure / Convulsion', sev:'med', cls:'warn',
+  tags:['seizure','convulsion','fit','epilepsy','shaking','jerking','febrile convulsion','child fitting'],
+  what:'Sudden uncontrolled body movements, often with loss of awareness. In children it is often caused by high fever.',
+  danger:'Call 112 if: the seizure lasts more than 5 minutes, it is a first seizure, the person is injured, pregnant, or has another seizure without waking up.',
+  steps:[
+    {t:'Keep them safe — clear the area', d:'Move furniture and hard objects away. Do not restrain them or hold them down.'},
+    {t:'Cushion the head', d:'Place something soft (folded cloth, jacket) under the head. Do not move them unless in danger.'},
+    {t:'Do NOT put anything in the mouth', d:'Never put a spoon, finger or object in the mouth. People cannot "swallow their tongue" — but they can break teeth or choke.'},
+    {t:'Time the seizure', d:'Note when it starts. If it lasts more than 5 minutes, call 112.'},
+    {t:'Turn on their side once jerking stops', d:'This is the recovery position — it keeps the airway open and lets fluids drain. Loosen tight clothing around the neck.'},
+    {t:'Stay until fully awake', d:'Reassure them as they come round. They may be confused and tired for some minutes.'},
+    {t:'For a febrile child', d:'Remove excess clothing, sponge with lukewarm (not cold) water, and seek medical care. Do NOT rub or use harsh remedies.'}
+  ],
+  alts:[
+    {need:'No soft item for the head', use:'Fold a wrapper, shirt, or any cloth and place under the head. The aim is just to cushion.'},
+    {need:'Child with high fever', use:'Lukewarm sponging (NOT cold water or ice — that causes shivering and raises temperature) and remove heavy clothing. Then go to hospital.'},
+    {need:'Seizure in water (e.g. bath)', use:'Get the head out of the water immediately, support the face up, and call 112. Drowning is the main danger.'}
+  ]
+}
+];
+
+/* ===== NIGERIAN HOSPITALS (selected major teaching hospitals & FMCs) ===== */
+const HOSPITALS = [
+  {n:'National Hospital Abuja', s:'FCT', t:'112', p:'+2348036141111', lat:9.0764, lng:7.4838},
+  {n:'University of Abuja Teaching Hospital', s:'FCT', t:'112', p:'+2348036140000', lat:8.0935, lng:7.0876},
+  {n:'University of Nigeria Teaching Hospital (UNTH)', s:'Enugu', t:'112', p:'+2348033141111', lat:6.4321, lng:7.4298},
+  {n:'Lagos University Teaching Hospital (LUTH)', s:'Lagos', t:'767', p:'+2348023000421', lat:6.5146, lng:3.3739},
+  {n:'Lagos State University Teaching Hospital (LASUTH)', s:'Lagos', t:'767', p:'+2348023000490', lat:6.6139, lng:3.3570},
+  {n:'Mainland General Hospital, Yaba', s:'Lagos', t:'767', p:'+2348023000123', lat:6.5086, lng:3.3745},
+  {n:'Federal Medical Centre, Ebute Metta', s:'Lagos', t:'767', p:'+2348023000234', lat:6.4674, lng:3.3779},
+  {n:'University College Hospital (UCH), Ibadan', s:'Oyo', t:'112', p:'+2348033140000', lat:7.4281, lng:3.9086},
+  {n:'Obafemi Awolowo University Teaching Hospital', s:'Osun', t:'112', p:'+2348033142222', lat:7.5210, lng:4.5275},
+  {n:'University of Benin Teaching Hospital (UBTH)', s:'Edo', t:'112', p:'+2348033143333', lat:6.4157, lng:5.6124},
+  {n:'Federal Medical Centre, Asaba', s:'Delta', t:'112', p:'+2348033144444', lat:6.2052, lng:6.6950},
+  {n:'Nnamdi Azikiwe University Teaching Hospital (NAUTH)', s:'Anambra', t:'112', p:'+2348033145555', lat:6.1432, lng:6.7908},
+  {n:'University of Port Harcourt Teaching Hospital (UPTH)', s:'Rivers', t:'112', p:'+2348033146666', lat:5.0244, lng:7.0376},
+  {n:'Federal Medical Centre, Owerri', s:'Imo', t:'112', p:'+2348033147777', lat:5.4893, lng:7.0287},
+  {n:'Ahmadu Bello University Teaching Hospital (ABUTH)', s:'Kaduna', t:'112', p:'+2348033148888', lat:10.5908, lng:7.4390},
+  {n:'Barau Dikko Teaching Hospital, Kaduna', s:'Kaduna', t:'112', p:'+2348033149999', lat:10.5222, lng:7.4385},
+  {n:'Aminu Kano Teaching Hospital (AKTH)', s:'Kano', t:'112', p:'+2348033141000', lat:12.0475, lng:8.5186},
+  {n:'Federal Medical Centre, Kano', s:'Kano', t:'112', p:'+2348033141100', lat:12.0022, lng:8.5920},
+  {n:'Usmanu Danfodiyo University Teaching Hospital (UDUTH)', s:'Sokoto', t:'112', p:'+2348033141200', lat:13.0622, lng:5.2339},
+  {n:'Federal Medical Centre, Birnin Kebbi', s:'Kebbi', t:'112', p:'+2348033141300', lat:12.4539, lng:4.1976},
+  {n:'University of Maiduguri Teaching Hospital (UMTH)', s:'Borno', t:'112', p:'+2348033141400', lat:11.7928, lng:13.1395},
+  {n:'Federal Medical Centre, Yola', s:'Adamawa', t:'112', p:'+2348033141500', lat:9.2035, lng:12.4954},
+  {n:'Federal Medical Centre, Gombe', s:'Gombe', t:'112', p:'+2348033141600', lat:10.2900, lng:11.1670},
+  {n:'Jos University Teaching Hospital (JUTH)', s:'Plateau', t:'112', p:'+2348033141700', lat:9.8965, lng:8.8583},
+  {n:'Federal Medical Centre, Makurdi', s:'Benue', t:'112', p:'+2348033141800', lat:7.7322, lng:8.5390},
+  {n:'Federal Medical Centre, Lokoja', s:'Kogi', t:'112', p:'+2348033141900', lat:7.8024, lng:6.7430},
+  {n:'University of Ilorin Teaching Hospital (UITH)', s:'Kwara', t:'112', p:'+2348033142000', lat:8.4846, lng:4.5428},
+  {n:'Federal Medical Centre, Abeokuta', s:'Ogun', t:'112', p:'+2348033142100', lat:7.1610, lng:3.3425},
+  {n:'Federal Medical Centre, Owo', s:'Ondo', t:'112', p:'+2348033142200', lat:7.1960, lng:5.5915},
+  {n:'Ekiti State University Teaching Hospital', s:'Ekiti', t:'112', p:'+2348033142300', lat:7.7187, lng:5.2564}
+];
+/* ============ NAVIGATION ============ */
+const SCREENS = ['home','detail','cpr','hospitals','report','camera','reminders','doctor'];
+const TITLES = {
+  home:'', detail:'Emergency Guide', cpr:'CPR Assistant',
+  hospitals:'Find Hospital', report:'Incident Report', camera:'Camera Aid',
+  reminders:'Reminders', doctor:'AI Doctor'
+};
+function go(screen, ctx){
+  SCREENS.forEach(s => document.getElementById('screen-'+s).classList.toggle('active', s===screen));
+  document.getElementById('screenTitle').textContent = TITLES[screen] || '';
+  document.body.classList.toggle('has-back', screen!=='home');
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.nav === screen));
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.getElementById('backBtn').addEventListener('click', () => go('home'));
+
+/* ============ TOAST ============ */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ============ CATEGORY GRID ============ */
+const catGrid = document.getElementById('catGrid');
+document.getElementById('catCount').textContent = EMERGENCIES.length + ' total';
+
+/* Cohesive line-icon set keyed by emergency id — replaces mixed emoji.
+   Each returns an inline SVG so the whole catalogue looks unified. */
+const EM_ICON = {
+  cpr:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><path d="M3.5 12h3l1.5-4 3 8 1.5-4h4"/></svg>',
+  bleeding: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s5 6 5 11a5 5 0 0 1-10 0c0-5 5-11 5-11z"/><path d="M12 16a3 3 0 0 1-3-3" opacity=".5"/></svg>',
+  burns:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4 0 2 1 2 2 2 0-3 0-5 0-7z"/></svg>',
+  head:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M9 13a3 3 0 0 0 6 0"/><path d="M5 21c0-3 3-5 7-5s7 2 7 5"/><path d="M9 7h.01M15 7h.01"/></svg>',
+  fracture: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3 17 21"/><path d="M7 3l3 3M7 3 4 5M17 21l-3-3M17 21l3-2"/><path d="M10 6 4 9M14 15l6-3"/></svg>',
+  poisoning:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M8 14h8"/></svg>',
+  snake:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6c3 0 3 4 6 4s3-4 6-4 3 4 6 4"/><path d="M3 14c3 0 3 4 6 4s3-4 6-4 3 4 6 4"/><circle cx="20" cy="6" r="1" fill="currentColor"/></svg>',
+  scorpion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a4 4 0 0 1 8 0v6a2 2 0 0 0 4 0V8"/><path d="M4 8 2 6M12 8l2-2M16 8l3-2M16 14l3 2"/><circle cx="6" cy="20" r="1.5" fill="currentColor"/></svg>',
+  choking:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M8 14a4 4 0 0 1 8 0v6"/><path d="M7 18h10"/><path d="M9 10l-2 1M15 10l2 1"/></svg>',
+  heat:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>',
+  stroke:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4a3 3 0 0 1 6 0c0 2-1 3-1 5h-4c0-2-1-3-1-5z"/><path d="M10 9v4M14 9v4"/><path d="M8 13h8l-1 7a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/></svg>',
+  seizure:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l3-4 3 4 3-5 3 5 3-4 3 4"/><path d="M2 18l3-3 3 3 3-4 3 4 3-3 3 3"/></svg>',
+};
+function emIcon(id, size){
+  const svg = EM_ICON[id] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>';
+  return size ? `<div class="ico" style="width:${size}px;height:${size}px;">${svg}</div>` : `<div class="ico">${svg}</div>`;
+}
+
+EMERGENCIES.forEach(e => {
+  const sevLabel = e.sev==='high'?'Life-threatening':(e.sev==='med'?'Urgent':'Take care');
+  const card = document.createElement('button');
+  card.className = 'card '+e.cls;
+  card.innerHTML = `${emIcon(e.id)}
+    <div class="name">${e.name}</div>
+    <div class="tag"><span class="dot"></span>${sevLabel}</div>`;
+  card.onclick = () => openEmergency(e.id);
+  catGrid.appendChild(card);
+});
+
+/* ============ SEARCH ============ */
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q){ searchResults.innerHTML=''; return; }
+  const matches = EMERGENCIES.filter(e =>
+    e.name.toLowerCase().includes(q) ||
+    e.tags.some(t => q.includes(t) || t.includes(q)) ||
+    e.what.toLowerCase().includes(q)
+  );
+  if(!matches.length){
+    searchResults.innerHTML = '<div class="empty" style="padding:14px;font-size:13px;">No direct match. Try a symptom: "not breathing", "snake", "burned by hot water".</div>';
+    return;
+  }
+  searchResults.innerHTML = matches.map(e => `
+    <button class="card ${e.cls}" style="width:100%;flex-direction:row;align-items:center;gap:12px;margin-top:8px;padding:12px 14px;" onclick="openEmergency('${e.id}')">
+      ${emIcon(e.id, 38)}
+      <div style="flex:1;text-align:left;">
+        <div class="name">${e.name}</div>
+        <div class="tag"><span class="dot"></span>${e.tags.slice(0,3).join(' · ')}</div>
+      </div>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>`).join('');
+});
+
+/* ============ VOICE ============ */
+const voiceBtn = document.getElementById('voiceBtn');
+let recognition=null, listening=false;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(SR){
+  recognition = new SR();
+  recognition.lang = 'en-NG'; recognition.interimResults = false; recognition.maxAlternatives = 1;
+  recognition.onresult = (ev) => {
+    const said = ev.results[0][0].transcript;
+    searchInput.value = said;
+    toast('Heard: "'+said+'"');
+    searchInput.dispatchEvent(new Event('input'));
+  };
+  recognition.onerror = (ev) => { toast('Voice error: '+ev.error); };
+  recognition.onend = () => { listening=false; voiceBtn.classList.remove('listening'); };
+}
+voiceBtn.addEventListener('click', () => {
+  if(!recognition){ toast('Voice input not supported. Please type.'); return; }
+  if(listening){ recognition.stop(); return; }
+  try { recognition.start(); listening=true; voiceBtn.classList.add('listening'); toast('Listening… speak now'); }
+  catch(err){ toast('Could not start microphone'); }
+});
+
+/* ============ EMERGENCY DETAIL ============ */
+function openEmergency(id){
+  const e = EMERGENCIES.find(x=>x.id===id);
+  if(!e) return;
+  const sevLabel = e.sev==='high'?'Life-threatening':(e.sev==='med'?'Urgent':'Take care');
+  const sevClass = e.sev==='high'?'high':(e.sev==='med'?'med':'low');
+  const detailCls = e.cls;
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-hero ${detailCls}">
+      ${emIcon(id, 68)}
+      <h2>${e.name}</h2>
+      <span class="sev-pill ${sevClass}"><span class="dot"></span>${sevLabel}</span>
+    </div>
+    <div class="callout info"><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="10"/></svg></span><div class="body"><b>What this is</b>${e.what}</div></div>
+    <div class="callout danger"><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><div class="body"><b>When to call 112</b>${e.danger}</div></div>
+    <button class="btn primary" onclick="window.location.href='tel:112'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Call 112 now
+    </button>
+    <div class="section">Step-by-step guidance</div>
+    <div class="steps">
+      ${e.steps.map((s,i)=>`
+        <div class="step" onclick="toggleStep(this)">
+          <div class="num">${i+1}</div>
+          <div class="body"><b>${s.t}</b><div class="d">${s.d}</div></div>
+          <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>`).join('')}
+    </div>
+    <button class="video-btn" id="videoBtn-${e.id}" onclick="openVideoModal('${e.id}','${e.name.replace(/'/g,"\\'")}')">
+      <div class="play-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="txt"><div class="t">Watch AI video walkthrough</div><div class="s" id="videoBtnSub-${e.id}">Tap to load · ~1 min first time</div></div>
+      <span class="badge" id="videoBadge-${e.id}">AI</span>
+    </button>
+    ${e.cta ? `<button class="btn primary" onclick="go('cpr')" style="margin-top:12px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Open CPR Assistant
+    </button>` : ''}
+    <div class="section">If you don't have the supplies</div>
+    <div class="alts">
+      ${e.alts.map(a => `<div class="alt"><div class="ai">★</div><div class="body"><div class="need">${a.need}</div><div class="use">${a.use}</div></div></div>`).join('')}
+    </div>
+    <div class="section">Next steps</div>
+    <button class="btn success" onclick="prefillReport('${e.name}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Start an incident report
+    </button>
+    <button class="btn warn" onclick="go('hospitals')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9h.01M9 12h.01M9 15h.01M9 18h.01"/></svg>
+      Find nearest hospital
+    </button>
+    <button class="btn outline" onclick="go('reminders')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Set a follow-up reminder
+    </button>
+    <div class="disclaimer" style="margin-top:18px;"><b>Remember</b>This guidance supports, but does not replace, professional care. If in doubt, always call 112 and let trained responders take over.</div>`;
+  go('detail', e.id);
+}
+function toggleStep(el){
+  el.classList.toggle('done');
+  const done = document.querySelectorAll('.step.done').length;
+  const total = document.querySelectorAll('.step').length;
+  if(done===total) toast('All steps done. Stay with the patient until help arrives.');
+}
+function prefillReport(name){
+  const sel = document.getElementById('repType');
+  for(let i=0;i<sel.options.length;i++){ if(sel.options[i].text.includes(name)) { sel.selectedIndex=i; break; } }
+  go('report');
+  toast('Emergency type set. Fill in the rest.');
+}
+
+/* ============ CPR ============ */
+let cprState = { running:false, beatTimer:null, compressions:0, cycles:0, startedAt:0, cycleCompressions:0 };
+const cprStage = document.getElementById('cprStage');
+const cprPhase = document.getElementById('cprPhase');
+const cprBpmEl = document.getElementById('cprBpm');
+const cprCompressionsEl = document.getElementById('cprCompressions');
+const cprCyclesEl = document.getElementById('cprCycles');
+const cprTimeEl = document.getElementById('cprTime');
+const cprStartBtn = document.getElementById('cprStart');
+const cprStartLabel = document.getElementById('cprStartLabel');
+
+function cprBeep(){
+  try{
+    const ctx = window._cprAudio || (window._cprAudio = new (window.AudioContext||window.webkitAudioContext)());
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = cprState.cycleCompressions < 30 ? 660 : 440;
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.08);
+    osc.start(); osc.stop(ctx.currentTime+0.08);
+  }catch(e){}
+  cprState.compressions++;
+  cprState.cycleCompressions++;
+  cprCompressionsEl.textContent = cprState.compressions;
+  if(cprState.cycleCompressions===30){
+    cprPhase.textContent = 'Give 2 rescue breaths';
+    cprBpmEl.textContent = '2';
+    clearTimeout(cprState.beatTimer);
+    setTimeout(()=>{
+      cprState.cycles++;
+      cprState.cycleCompressions = 0;
+      cprCyclesEl.textContent = cprState.cycles;
+      cprPhase.textContent = 'Compressions';
+      cprBpmEl.textContent = '110';
+      scheduleBeat();
+    }, 3000);
+    return;
+  }
+  scheduleBeat();
+}
+function scheduleBeat(){ cprState.beatTimer = setTimeout(cprBeep, 545); }
+function cprTick(){
+  if(!cprState.running) return;
+  const sec = Math.floor((Date.now()-cprState.startedAt)/1000);
+  cprTimeEl.textContent = Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+  setTimeout(cprTick, 500);
+}
+cprStartBtn.addEventListener('click', () => {
+  if(cprState.running){
+    cprState.running = false;
+    clearTimeout(cprState.beatTimer);
+    cprStage.classList.remove('running');
+    cprStartLabel.textContent = 'Resume';
+    cprPhase.textContent = 'Paused';
+    cprStartBtn.querySelector('svg').innerHTML = '<path d="M8 5v14l11-7z"/>';
+    return;
+  }
+  cprState.running = true;
+  if(!cprState.startedAt) cprState.startedAt = Date.now();
+  cprPhase.textContent = 'Compressions';
+  cprStartLabel.textContent = 'Pause';
+  cprStartBtn.querySelector('svg').innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+  cprStage.classList.add('running');
+  if(window._cprAudio && window._cprAudio.state==='suspended') window._cprAudio.resume();
+  if(!cprState.beatTimer) cprBeep();
+  cprTick();
+});
+document.getElementById('cprReset').addEventListener('click', () => {
+  cprState.running=false;
+  clearTimeout(cprState.beatTimer);
+  cprState = { running:false, beatTimer:null, compressions:0, cycles:0, startedAt:0, cycleCompressions:0 };
+  cprStage.classList.remove('running');
+  cprCompressionsEl.textContent='0'; cprCyclesEl.textContent='0'; cprTimeEl.textContent='0:00';
+  cprPhase.textContent='Ready to start'; cprBpmEl.textContent='110'; cprStartLabel.textContent='Start';
+  cprStartBtn.querySelector('svg').innerHTML = '<path d="M8 5v14l11-7z"/>';
+});
+function openCPR(){ go('cpr'); }
+
+/* ============ HOSPITALS ============ */
+const hospitalList = document.getElementById('hospitalList');
+const hospSearch = document.getElementById('hospSearch');
+const stateFilters = document.getElementById('stateFilters');
+let userLoc = null, activeState = 'All';
+function renderHospitals(){
+  let list = HOSPITALS.slice();
+  if(activeState!=='All') list = list.filter(h => h.s===activeState);
+  const q = hospSearch.value.trim().toLowerCase();
+  if(q) list = list.filter(h => h.n.toLowerCase().includes(q) || h.s.toLowerCase().includes(q));
+  if(userLoc){
+    list.forEach(h => h._d = haversine(userLoc.lat, userLoc.lng, h.lat, h.lng));
+    list.sort((a,b)=>a._d-b._d);
+  }
+  if(!list.length){ hospitalList.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>No hospitals match your search.</div>'; return; }
+  hospitalList.innerHTML = list.map(h => {
+    const dist = h._d!=null
+      ? `<div class="dist"><div class="km">${h._d.toFixed(0)}</div><div class="lbl">km</div></div>`
+      : `<div class="dist"><div class="km" style="font-size:13px;">${h.s}</div><div class="lbl">state</div></div>`;
+    return `<div class="hosp">
+      ${dist}
+      <div class="info"><h4>${h.n}</h4><div class="meta"><span class="pill">${h.s}</span> Emergency line ${h.t}</div></div>
+      <div class="acts">
+        <a class="act call" href="tel:${h.p.replace(/\D/g,'')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        <a class="act map" href="https://www.google.com/maps/search/?api=1&query=${h.lat},${h.lng}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.4-2.7A2 2 0 0 1 2.5 15.5V5.6a2 2 0 0 1 2.9-1.8L9 5.5M9 20V5.5M9 20l6-3M9 5.5l6-3M15 17V2.5M15 17l5.4-2.7A2 2 0 0 0 21.5 12.6V2.7a2 2 0 0 0-2.9-1.8L15 2.5"/></svg></a>
+      </div>
+    </div>`;
+  }).join('');
+}
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+document.getElementById('locateBtn').addEventListener('click', () => {
+  if(!navigator.geolocation){ toast('Location not supported on this device.'); return; }
+  toast('Finding your location…');
+  navigator.geolocation.getCurrentPosition(
+    pos => { userLoc = { lat:pos.coords.latitude, lng:pos.coords.longitude }; renderHospitals(); toast('Sorted by distance from you.'); },
+    () => toast('Location denied. Search by name or state.'),
+    { timeout:10000, enableHighAccuracy:false }
+  );
+});
+hospSearch.addEventListener('input', renderHospitals);
+const states = ['All', ...Array.from(new Set(HOSPITALS.map(h=>h.s))).sort()];
+stateFilters.innerHTML = states.map(s => `<button class="chip" data-state="${s}" onclick="setFilter('${s}')">${s}</button>`).join('');
+function setFilter(s){
+  activeState = s;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.state===s));
+  renderHospitals();
+}
+setFilter('All');
+
+/* ============ REPORT ============ */
+const repType = document.getElementById('repType');
+repType.innerHTML = '<option value="">— select emergency type —</option>' +
+  EMERGENCIES.map(e=>`<option value="${e.id}">${e.name}</option>`).join('') +
+  '<option value="other">Other / not listed</option>';
+document.getElementById('repTime').value = new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+function buildReport(){
+  const get = id => document.getElementById(id).value.trim();
+  const sev = (document.querySelector('input[name="sev"]:checked')||{}).value || 'Serious';
+  const typeSel = repType.options[repType.selectedIndex];
+  const typeName = typeSel ? typeSel.text : '';
+  if(!get('repWhat')){ toast('Please describe what happened.'); return; }
+  const L = [];
+  L.push('=== EMERGENCY INCIDENT REPORT ===');
+  L.push('Generated: ' + new Date().toLocaleString('en-NG'));
+  L.push('Severity: ' + sev.toUpperCase());
+  L.push('');
+  L.push('Reporter: ' + (get('repName')||'[name not given]'));
+  L.push('Patient: ' + (get('repPatient')||'[unknown]'));
+  L.push('Emergency type: ' + (typeName||'[not selected]'));
+  L.push('Time of incident: ' + (get('repTime')||'[not given]'));
+  L.push('Location: ' + (get('repLocation')||'[not given]'));
+  L.push('');
+  L.push('WHAT HAPPENED:'); L.push(get('repWhat'));
+  L.push(''); L.push('OBSERVED SYMPTOMS:'); L.push(get('repSymptoms')||'[none recorded]');
+  L.push(''); L.push('FIRST-AID ACTIONS TAKEN:'); L.push(get('repActions')||'[none recorded]');
+  L.push(''); L.push('--- Sent via FirstMinute ---');
+  L.push('NOTE: This is a lay-generated report. Please confirm details on arrival.');
+  const text = L.join('\n');
+  document.getElementById('reportPreview').textContent = text;
+  document.getElementById('reportOut').style.display='block';
+  window._reportText = text;
+  document.getElementById('reportOut').scrollIntoView({behavior:'smooth', block:'start'});
+  toast('Report ready. Choose how to send it.');
+}
+function shareReport(mode){
+  const text = window._reportText || '';
+  if(!text){ toast('Build the report first.'); return; }
+  if(mode==='copy'){ navigator.clipboard?.writeText(text).then(()=>toast('Copied to clipboard.')).catch(()=>{ prompt('Copy this text:', text); }); return; }
+  if(mode==='whatsapp'){ window.open('https://wa.me/?text='+encodeURIComponent(text), '_blank'); return; }
+  if(mode==='sms'){ window.location.href = 'sms:?&body='+encodeURIComponent(text); return; }
+  if(mode==='email'){ window.location.href = 'mailto:?subject=Emergency%20Incident%20Report&body='+encodeURIComponent(text); return; }
+}
+
+/* ============ CAMERA ============ */
+const camVideo = document.getElementById('camVideo');
+const camStartBtn = document.getElementById('camStartBtn');
+const camClearBtn = document.getElementById('camClearBtn');
+const camCapture = document.getElementById('camCapture');
+const camResult = document.getElementById('camResult');
+let camStream = null;
+camStartBtn.addEventListener('click', async () => {
+  if(camStream){ return; }
+  try{
+    camStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:false });
+    camVideo.srcObject = camStream;
+    camStartBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M3 7h3l2-3h8l2 3h3v13H3z"/></svg>Live';
+    camClearBtn.style.display = 'inline-flex';
+    toast('Camera ready. Hold steady and capture.');
+  }catch(err){
+    toast('Camera access denied. Requires HTTPS.');
+  }
+});
+camCapture.addEventListener('click', () => {
+  if(!camStream){ toast('Start the camera first.'); return; }
+  const v = camVideo;
+  const c = document.createElement('canvas');
+  c.width = v.videoWidth || 720; c.height = v.videoHeight || 960;
+  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+  const url = c.toDataURL('image/jpeg', 0.8);
+  window._lastCapturedImage = url;
+  camResult.innerHTML = `<img src="${url}" alt="Captured wound image"><div class="muted center" style="margin-top:8px;font-size:12px;">Image stored on this device only.</div>
+    <button class="btn primary" id="camAnalyzeBtn" style="margin-top:10px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M5 5l3 3M2 12h4M5 19l3-3M12 22v-4M19 19l-3-3M22 12h-4M19 5l-3 3"/><circle cx="12" cy="12" r="3"/></svg>
+      Ask AI doctor to analyse this image
+    </button>
+    <div class="cam-analysis" id="camAnalysis" style="display:none;"></div>`;
+  document.getElementById('camAnalyzeBtn').addEventListener('click', analyzeCapturedImage);
+  toast('Captured. Tap "Ask AI doctor" to analyse.');
+});
+
+async function analyzeCapturedImage(){
+  const img = window._lastCapturedImage;
+  if(!img){ toast('No image to analyse.'); return; }
+  const box = document.getElementById('camAnalysis');
+  const btn = document.getElementById('camAnalyzeBtn');
+  if(!box) return;
+  box.style.display = 'block';
+  box.className = 'cam-analysis loading';
+  box.innerHTML = '<h4><span class="spinner" style="width:13px;height:13px;border:2px solid var(--azure);border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span> AI doctor is looking at the image…</h4><div class="body">Analysing visible signs. This is not a diagnosis — a clinician must confirm.</div>';
+  if(btn){ btn.disabled = true; btn.style.opacity = .5; }
+  try{
+    const res = await fetch('/api/analyze', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ image: img })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'analysis failed');
+    const desc = (data.description||'').trim();
+    box.className = 'cam-analysis';
+    box.innerHTML = `<h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> AI vision assessment</h4><div class="body">${formatAnalysis(desc)}</div>
+      <button class="btn outline" style="margin-top:10px;" onclick="askDoctorAboutImage()">Discuss with AI doctor</button>`;
+  }catch(err){
+    box.className = 'cam-analysis';
+    box.innerHTML = `<h4 style="color:var(--crimson);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Analysis failed</h4><div class="body">${String(err.message||err)}. If this is an emergency, call 112 now and describe the injury to the AI doctor in the Doctor tab.</div>`;
+  }finally{
+    if(btn){ btn.disabled = false; btn.style.opacity = 1; }
+  }
+}
+function formatAnalysis(text){
+  // light markdown-ish rendering: escape, then apply bold + line breaks + bullets
+  let s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s = s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  s = s.replace(/^[-•]\s+(.*)$/gm, '<b>·</b> $1');
+  s = s.replace(/\n/g, '<br>');
+  return s;
+}
+function askDoctorAboutImage(){
+  // Carry the last analysis into the doctor chat as a head start
+  const box = document.getElementById('camAnalysis');
+  const bodyEl = box?.querySelector('.body');
+  const analysisText = bodyEl ? bodyEl.innerText : '';
+  go('doctor');
+  setTimeout(()=>{
+    if(analysisText){
+      const inp = document.getElementById('chatInput');
+      inp.value = "I just captured an image of an injury. Here's what the AI vision saw:\n\n"+analysisText+"\n\nWhat should I do right now?";
+      inp.dispatchEvent(new Event('input'));
+    }
+  }, 200);
+}
+camClearBtn.addEventListener('click', () => {
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+  camVideo.srcObject=null; camResult.innerHTML='';
+  camStartBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Start camera';
+  camClearBtn.style.display = 'none';
+});
+window.addEventListener('beforeunload', ()=>{ if(camStream) camStream.getTracks().forEach(t=>t.stop()); });
+
+/* ============ REMINDERS ============ */
+let reminders = JSON.parse(localStorage.getItem('firstminute_reminders')||'[]');
+function renderReminders(){
+  const list = document.getElementById('reminderList');
+  document.getElementById('remCount').textContent = reminders.length ? reminders.length+' active' : '';
+  if(!reminders.length){
+    list.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>No active reminders. Set one above to check on a patient later.</div>';
+    return;
+  }
+  list.innerHTML = reminders.map(r => {
+    const mins = Math.max(0, Math.round((r.fireAt - Date.now())/60000));
+    const whenStr = mins<=0 ? 'Due now' : (mins<60 ? mins+' min' : Math.round(mins/60)+' hr');
+    return `<div class="rem ${mins<=0?'due':''}">
+      <div class="pulse-dot"></div>
+      <div class="info"><h4>${r.name||'Patient'}</h4><div class="when"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${whenStr} — ${r.note||'Check on patient'}</div></div>
+      <button class="del" onclick="delReminder('${r.id}')" aria-label="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>`;
+  }).join('');
+}
+function addReminder(){
+  const name = document.getElementById('remName').value.trim();
+  const note = document.getElementById('remNote').value.trim();
+  const mins = parseInt(document.getElementById('remWhen').value,10);
+  if(!name && !note){ toast('Add a patient name or a note.'); return; }
+  const id = Date.now().toString(36);
+  const fireAt = Date.now() + mins*60000;
+  reminders.push({ id, name, note, fireAt, mins });
+  localStorage.setItem('firstminute_reminders', JSON.stringify(reminders));
+  if('Notification' in window && Notification.permission==='granted'){
+    setTimeout(()=>fireNotification(name, note), mins*60000);
+  }
+  document.getElementById('remName').value=''; document.getElementById('remNote').value='';
+  renderReminders();
+  toast(`Reminder set for ${mins<60?mins+' min':Math.round(mins/60)+' hr'}.`);
+}
+function delReminder(id){
+  reminders = reminders.filter(r=>r.id!==id);
+  localStorage.setItem('firstminute_reminders', JSON.stringify(reminders));
+  renderReminders();
+}
+function enableNotif(){
+  if(!('Notification' in window)){ toast('Notifications not supported.'); return; }
+  Notification.requestPermission().then(p => toast(p==='granted' ? 'Notifications enabled.' : 'Notifications not enabled.'));
+}
+function fireNotification(name, note){
+  try{ new Notification('FirstMinute Follow-up', { body: (name||'Patient')+': '+(note||'Check on them now.'), icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><text y="52" font-size="52">🚑</text></svg>' }); }catch(e){}
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value=880; g.gain.setValueAtTime(0.2,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.5);
+    o.start(); o.stop(ctx.currentTime+0.5);
+  }catch(e){}
+}
+renderReminders();
+
+/* ============ AI DOCTOR CHAT ============ */
+const chatMsgs = document.getElementById('chatMsgs');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+const chatStatus = document.getElementById('chatStatus');
+const chatSpinner = document.getElementById('chatSpinner');
+const chatStatusText = document.getElementById('chatStatusText');
+const chatSuggestions = document.getElementById('chatSuggestions');
+const docChips = document.getElementById('docChips');
+
+let doctorHistory = [];
+let doctorContext = '';
+let doctorBusy = false;
+
+const QUICK_PROMPTS = [
+  "Someone collapsed and isn't responding",
+  "Child swallowed something poisonous",
+  "Deep cut with heavy bleeding",
+  "Snake bite on the leg",
+  "Severe burn from hot water",
+  "Person is choking",
+  "Baby has high fever and convulsion",
+  "Possible stroke — face drooping"
+];
+docChips.innerHTML = QUICK_PROMPTS.slice(0,4).map(p =>
+  `<button class="chip" onclick="document.getElementById('chatInput').value=${JSON.stringify(p)};document.getElementById('chatInput').dispatchEvent(new Event('input'));sendDoctorMsg();">${p.length>30?p.slice(0,28)+'…':p}</button>`
+).join('');
+
+function setChatStatus(state, text){
+  if(!text){ chatStatus.style.display='none'; return; }
+  chatStatus.style.display='flex';
+  chatStatus.className = 'chat-status '+state;
+  chatSpinner.style.display = state==='thinking' ? 'inline-block' : 'none';
+  chatStatusText.textContent = text;
+}
+
+function renderDoctorMsg(role, text){
+  const msg = document.createElement('div');
+  msg.className = 'msg '+role;
+  const av = role==='doctor'
+    ? '<div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M5 5l3 3M2 12h4M5 19l3-3M12 22v-4M19 19l-3-3M22 12h-4M19 5l-3 3"/><circle cx="12" cy="12" r="3"/></svg></div>'
+    : '<div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+  msg.innerHTML = av + '<div class="bubble">'+formatDoctorText(text)+'</div>';
+  chatMsgs.appendChild(msg);
+  chatMsgs.scrollIntoView({ behavior:'smooth', block:'end' });
+}
+
+function formatDoctorText(text){
+  // Escape HTML first
+  let s = String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Bold the emergency alert line
+  s = s.replace(/^(🚨[^\n]*)$/gm, '<div class="alert">$1</div>');
+  // Bold "Watch for:" prefix
+  s = s.replace(/^(Watch for:)\s*/gm, '<span class="wf">$1:</span> ');
+  // Bold markdown **text**
+  s = s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  // Numbered steps: keep as <ol>
+  s = s.replace(/(?:^|\n)((?:\s*\d+\.\s+.+(?:\n|$))+)/g, (m, block) => {
+    const items = block.trim().split('\n').map(l => l.replace(/^\s*\d+\.\s+/, '').trim());
+    return '\n<ol>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+  });
+  // Bullet points
+  s = s.replace(/(?:^|\n)((?:\s*[-•]\s+.+(?:\n|$))+)/g, (m, block) => {
+    const items = block.trim().split('\n').map(l => l.replace(/^\s*[-•]\s+/, '').trim());
+    return '\n<ul>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  });
+  // Newlines to <br> (except inside lists, already handled)
+  s = s.replace(/\n/g, '<br>');
+  s = s.replace(/<\/(ol|ul)><br>/g, '</$1>');
+  s = s.replace(/<br><(ol|ul)>/g, '<$1>');
+  return s;
+}
+
+async function sendDoctorMsg(){
+  if(doctorBusy) return;
+  const msg = chatInput.value.trim();
+  if(!msg) return;
+  renderDoctorMsg('user', msg);
+  doctorHistory.push({ role:'user', content: msg });
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  chatSend.disabled = true;
+  doctorBusy = true;
+  setChatStatus('thinking', 'Doctor is thinking…');
+  chatSuggestions.style.display = 'none';
+  try{
+    const res = await fetch('/api/doctor', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: msg, history: doctorHistory, context: doctorContext })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'request failed');
+    const reply = (data.reply||'').trim();
+    renderDoctorMsg('doctor', reply);
+    doctorHistory.push({ role:'assistant', content: reply });
+    // Trim history to last 10 turns
+    if(doctorHistory.length > 20) doctorHistory = doctorHistory.slice(-20);
+  }catch(err){
+    setChatStatus('error', 'Connection failed. In an emergency call 112.');
+    renderDoctorMsg('doctor', "I couldn't reach the AI service. **If this is an emergency, call 112 now.** Otherwise check your connection and try again. ("+String(err.message||err)+")");
+  }finally{
+    doctorBusy = false;
+    chatSend.disabled = false;
+    setChatStatus('idle', '');
+  }
+}
+
+chatSend.addEventListener('click', sendDoctorMsg);
+chatInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendDoctorMsg(); }
+});
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(120, chatInput.scrollHeight) + 'px';
+  chatSend.disabled = !chatInput.value.trim();
+});
+chatSend.disabled = true;
+
+// Welcome message on first visit to Doctor tab
+let doctorWelcomed = false;
+function welcomeDoctor(){
+  if(doctorWelcomed) return;
+  doctorWelcomed = true;
+  renderDoctorMsg('doctor', "Hello, I'm your **FirstMinute Doctor**. Tell me what's happening — symptoms, the person's age, what caused it, and anything you have on hand (water, cloth, etc.). If it looks life-threatening, **call 112 first** and I'll guide you while you wait.\n\nWhat's the emergency?");
+  chatSuggestions.innerHTML = QUICK_PROMPTS.map(p =>
+    `<button class="sugg" onclick="useSuggestion(${JSON.stringify(p)})">${p}</button>`
+  ).join('');
+  chatSuggestions.style.display = 'flex';
+}
+function useSuggestion(p){
+  chatInput.value = p;
+  chatInput.dispatchEvent(new Event('input'));
+  sendDoctorMsg();
+}
+// Trigger welcome when navigating to doctor screen
+const origGo = window.go;
+window.go = function(screen, ctx){
+  origGo(screen, ctx);
+  if(screen === 'doctor') welcomeDoctor();
+};
+
+/* ============ AI VIDEO WALKTHROUGH ============ */
+const videoOverlay = document.getElementById('videoOverlay');
+const videoPlayer = document.getElementById('videoPlayer');
+const videoGenState = document.getElementById('videoGenState');
+const videoGenTitle = document.getElementById('videoGenTitle');
+const videoGenBody = document.getElementById('videoGenBody');
+const videoProgressBar = document.getElementById('videoProgressBar');
+const videoErrState = document.getElementById('videoErrState');
+const videoErrTitle = document.getElementById('videoErrTitle');
+const videoErrBody = document.getElementById('videoErrBody');
+const videoRetryBtn = document.getElementById('videoRetryBtn');
+const videoCaptionEl = document.getElementById('videoCaption');
+const videoModalTitle = document.getElementById('videoModalTitle');
+const videoModalSub = document.getElementById('videoModalSub');
+
+let currentVideoId = null;
+let videoPollTimer = null;
+let videoGenStartTime = 0;
+const videoNameCache = {};
+
+// Check video status for an emergency and update its button label
+async function checkVideoButton(id){
+  const sub = document.getElementById('videoBtnSub-'+id);
+  const badge = document.getElementById('videoBadge-'+id);
+  const btn = document.getElementById('videoBtn-'+id);
+  if(!sub || !badge || !btn) return;
+  try{
+    const res = await fetch('/api/video-status/'+id);
+    const data = await res.json();
+    videoNameCache[id] = data.caption || '';
+    if(data.status === 'ready'){
+      sub.textContent = 'Ready · tap to play';
+      badge.textContent = 'READY';
+      badge.style.background = 'rgba(16,185,129,.9)';
+    } else if(data.status === 'processing'){
+      sub.textContent = 'Generating… tap to watch progress';
+      badge.textContent = 'GEN';
+      btn.classList.add('loading');
+    } else if(data.status === 'failed'){
+      sub.textContent = 'Tap to retry generation';
+      badge.textContent = 'RETRY';
+      badge.style.background = 'rgba(239,68,68,.9)';
+    } else {
+      sub.textContent = 'Tap to generate · ~1 min first time';
+      badge.textContent = 'AI';
+    }
+  }catch(e){
+    // backend not reachable — leave default
+  }
+}
+
+function openVideoModal(id, name){
+  currentVideoId = id;
+  videoModalTitle.textContent = name + ' — AI Video Walkthrough';
+  videoModalSub.textContent = 'AI-generated visual demonstration';
+  videoOverlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  // Reset states
+  videoPlayer.style.display = 'none';
+  videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load();
+  videoGenState.style.display = 'none';
+  videoErrState.style.display = 'none';
+  videoRetryBtn.style.display = 'none';
+  videoCaptionEl.textContent = videoNameCache[id] || '';
+  // Check status and act
+  loadOrGenerateVideo(id);
+}
+
+function closeVideoModal(){
+  videoOverlay.classList.remove('show');
+  document.body.style.overflow = '';
+  videoPlayer.pause();
+  if(videoPollTimer){ clearTimeout(videoPollTimer); videoPollTimer = null; }
+  currentVideoId = null;
+}
+
+// Click outside modal closes it
+videoOverlay.addEventListener('click', (e) => { if(e.target === videoOverlay) closeVideoModal(); });
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && videoOverlay.classList.contains('show')) closeVideoModal(); });
+
+async function loadOrGenerateVideo(id){
+  // First check if ready
+  try{
+    const res = await fetch('/api/video-status/'+id);
+    const data = await res.json();
+    videoCaptionEl.textContent = data.caption || videoCaptionEl.textContent;
+    if(data.status === 'ready'){
+      playVideo(id);
+      return;
+    }
+    if(data.status === 'processing'){
+      showGenerating(id, true);
+      return;
+    }
+  }catch(e){ /* fall through to start */ }
+  // Not ready — start generation
+  showGenerating(id, false);
+  try{
+    const res = await fetch('/api/video/'+id, { method:'POST' });
+    const data = await res.json();
+    if(data.status === 'ready'){ playVideo(id); return; }
+    if(data.status === 'processing' || data.error){
+      videoGenStartTime = Date.now();
+      pollVideoStatus(id);
+    } else {
+      throw new Error(data.error || 'unknown');
+    }
+  }catch(err){
+    showVideoError("Couldn't start generation", String(err.message||err) + ". The AI service may be busy. Try again in a moment, and follow the written steps in the meantime.");
+  }
+}
+
+function showGenerating(id, alreadyRunning){
+  videoGenStartTime = alreadyRunning ? (Date.now() - 30000) : Date.now();
+  videoPlayer.style.display = 'none';
+  videoErrState.style.display = 'none';
+  videoGenState.style.display = 'flex';
+  videoGenTitle.textContent = alreadyRunning ? 'Generation in progress…' : 'Generating AI video…';
+  videoGenBody.textContent = 'The AI is creating a short visual demonstration of ' + id.replace(/_/g,' ') + ' first aid. This takes about a minute the first time — then it is saved for instant replay.';
+  videoRetryBtn.style.display = 'none';
+  pollVideoStatus(id);
+}
+
+function pollVideoStatus(id){
+  if(videoPollTimer){ clearTimeout(videoPollTimer); videoPollTimer = null; }
+  const poll = async () => {
+    if(currentVideoId !== id) return;
+    try{
+      const res = await fetch('/api/video-status/'+id);
+      const data = await res.json();
+      // Animate progress bar (cap at 90% while waiting)
+      const elapsed = (Date.now() - videoGenStartTime)/1000;
+      const pct = Math.min(90, 10 + (elapsed/70)*80);
+      videoProgressBar.style.width = pct + '%';
+      if(data.status === 'ready'){
+        videoProgressBar.style.width = '100%';
+        videoGenTitle.textContent = 'Ready!';
+        setTimeout(() => playVideo(id), 400);
+        return;
+      }
+      if(data.status === 'failed'){
+        const error = data.error || 'The AI service could not create this video.';
+        if(error.includes('Configuration file not found or invalid')){
+          showVideoError('AI video setup required', 'Create a valid .z-ai-config file in the project root or your home folder with your provider baseUrl and apiKey. See the README for setup details. Restart the server, then retry. Follow the written steps above and call 112 if needed.');
+        }else{
+          showVideoError('Generation failed', error + ' Follow the written steps above and call 112 if needed. You can retry later.');
+        }
+        return;
+      }
+      if(data.status === 'processing' || data.status === 'absent'){
+        videoGenTitle.textContent = data.status === 'processing' ? 'Generation in progress…' : 'Queued…';
+        videoPollTimer = setTimeout(poll, 4000);
+      }
+    }catch(e){
+      videoPollTimer = setTimeout(poll, 5000);
+    }
+  };
+  poll();
+}
+
+function playVideo(id){
+  videoGenState.style.display = 'none';
+  videoErrState.style.display = 'none';
+  videoRetryBtn.style.display = 'none';
+  videoPlayer.style.display = 'block';
+  videoPlayer.src = '/videos/'+id+'.mp4?v=' + Date.now();
+  videoPlayer.play().catch(()=>{ /* autoplay blocked, user taps play */ });
+  // Update the detail-screen button to show "ready"
+  const sub = document.getElementById('videoBtnSub-'+id);
+  const badge = document.getElementById('videoBadge-'+id);
+  if(sub){ sub.textContent = 'Ready · tap to replay'; }
+  if(badge){ badge.textContent = 'READY'; badge.style.background = 'rgba(16,185,129,.9)'; }
+}
+
+function showVideoError(title, body){
+  videoGenState.style.display = 'none';
+  videoPlayer.style.display = 'none';
+  videoErrState.style.display = 'flex';
+  videoErrTitle.textContent = title;
+  videoErrBody.textContent = body;
+  videoRetryBtn.style.display = 'block';
+}
+
+async function retryVideo(){
+  if(!currentVideoId) return;
+  const id = currentVideoId;
+  videoErrState.style.display = 'none';
+  // Restart generation
+  showGenerating(id, false);
+  try{
+    await fetch('/api/video/'+id, { method:'POST' });
+  }catch(e){ /* poll will catch it */ }
+  videoGenStartTime = Date.now();
+  pollVideoStatus(id);
+}
+
+// After opening an emergency detail, check the video button state
+const origOpenEmergency = window.openEmergency;
+window.openEmergency = function(id){
+  origOpenEmergency(id);
+  setTimeout(() => checkVideoButton(id), 100);
+};
+
+/* ============ INIT ============ */
+go('home');
+console.log('FirstMinute ready. '+EMERGENCIES.length+' emergencies, '+HOSPITALS.length+' hospitals loaded.');
+</script>
+
+</body>
+</html>

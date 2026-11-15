@@ -143,6 +143,7 @@ const LIFE_THREATENING_PATTERNS = [
   { pat: /\bpassed out.*\bhead\b/, label: "head injury" },
   { pat: /\bclear fluid.*ear\b/, label: "skull fracture sign" },
   // Cardiac
+  { pat: /\b(chest pain|chest pressure|pain in (?:the )?chest)\b/, label: "chest pain" },
   { pat: /\bcardiac arrest\b/, label: "cardiac arrest" },
   { pat: /\bheart (stopped|attack)\b/, label: "cardiac event" },
   // Emergencies present in the FirstMinute app but not yet covered by a Doc. Jr protocol

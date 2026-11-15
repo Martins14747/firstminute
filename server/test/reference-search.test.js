@@ -13,8 +13,8 @@ test('trusted reference parser keeps only MedlinePlus links and extracts short s
   const xml = `
     <nlmSearchResult><list>
       <document url="https://medlineplus.gov/heatstroke.html">
-        <content name="title">Heat Stroke</content>
-        <content name="snippet">Heat stroke &amp; heat illness.</content>
+        <content name="title">&lt;span class="qt0"&gt;Heat Stroke&lt;/span&gt;</content>
+        <content name="snippet">&lt;span class="qt0"&gt;Heat stroke&lt;/span&gt; &amp; heat illness.</content>
       </document>
       <document url="https://medlineplus.gov.attacker.example/fake">
         <content name="title">Fake</content>
@@ -49,12 +49,50 @@ test('search sends a bounded sanitized query and returns references only', async
   const url = new URL(requested.url);
   assert.equal(url.origin, 'https://wsearch.nlm.nih.gov');
   assert.equal(url.searchParams.get('db'), 'healthTopics');
-  assert.equal(url.searchParams.get('term'), 'What is eczema Call me at');
+  assert.equal(url.searchParams.get('term'), 'eczema Call');
   assert.equal(url.searchParams.get('retmax'), '3');
+  assert.equal(url.searchParams.get('tool'), 'firstminute');
   assert.equal(requested.options.redirect, 'error');
   assert.equal(result.status, 'found');
   assert.equal(result.results[0].title, 'Eczema');
   assert.equal(result.results[0].url, 'https://medlineplus.gov/eczema.html');
+});
+
+test('lookup caches successful searches and normalizes question wording', async () => {
+  let requests = 0;
+  const search = new MedlinePlusReferenceSearch({
+    fetchImpl: async () => {
+      requests++;
+      return {
+        ok: true,
+        text: async () => '<document url="https://medlineplus.gov/eczema.html"><content name="title">Eczema</content></document>',
+      };
+    },
+  });
+
+  const first = await search.search('What is eczema?');
+  const second = await search.search('eczema');
+  assert.equal(first.status, 'found');
+  assert.deepEqual(second, first);
+  assert.equal(requests, 1);
+});
+
+test('lookup respects the per-instance MedlinePlus request ceiling', async () => {
+  let requests = 0;
+  const search = new MedlinePlusReferenceSearch({
+    fetchImpl: async () => {
+      requests++;
+      return { ok: true, text: async () => '<nlmSearchResult><list /></nlmSearchResult>' };
+    },
+  });
+
+  for (let i = 0; i < 70; i++) {
+    await search.search(`topic-${i}`);
+  }
+  const limited = await search.search('topic-71');
+  assert.equal(requests, 70);
+  assert.equal(limited.status, 'unavailable');
+  assert.match(limited.error, /rate limit/i);
 });
 
 test('lookup reports network failures and strips common personal identifiers', async () => {

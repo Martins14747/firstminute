@@ -137,12 +137,12 @@ class DocJr {
     // Live references are non-urgent, read-only context; they never supply protocol steps.
     let referenceSearch = null;
     const referenceQuery = ctx.referenceQuery === undefined ? userText : ctx.referenceQuery;
-    const isInformationRequest = /\?\s*$|^\s*(explain|define|meaning of|tell me about)\b/i.test(referenceQuery);
-    const asksForImmediateAction = /\b(what should i do|what do i do|how (?:do|can|should) i|what can i do|can i give|should i give|how to treat|how can i stop|first aid|is this serious|should i worry)\b/i
-      .test(referenceQuery);
+    const isInformationRequest = /\?/.test(referenceQuery)
+      || /^\s*(what|why|how|where|when|who|tell me|explain|define|meaning of|look up|search for|find information)\b/i
+        .test(referenceQuery);
     const intent = llmResponseValid ? llmResult.response.intent : "medical_or_emergency";
     if (!protocol && !mustEscalate && intent !== "general_nonmedical"
-      && isInformationRequest && !asksForImmediateAction && this.referenceSearch) {
+      && isInformationRequest && this.referenceSearch) {
       referenceSearch = await this.referenceSearch.search(referenceQuery);
     }
 

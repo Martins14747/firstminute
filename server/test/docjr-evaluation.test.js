@@ -73,9 +73,12 @@ test('trusted references are searched only for unanswered non-urgent questions',
   const actionableQuestion = await docjr.process('What should I do about chest pain?');
   assert.equal(actionableQuestion.reference_search, null);
 
+  const broaderQuestion = await docjr.process('Could you find sources about eczema?');
+  assert.equal(broaderQuestion.reference_search.status, 'found');
+
   const historyOnly = await docjr.process('What is eczema?', { referenceQuery: '' });
   assert.equal(historyOnly.reference_search, null);
-  assert.deepEqual(queries, ['What is eczema?']);
+  assert.deepEqual(queries, ['What is eczema?', 'Could you find sources about eczema?']);
 });
 
 test('Doc. Jr preserves the validated non-medical conversation intent', async () => {

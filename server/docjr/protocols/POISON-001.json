@@ -1,0 +1,137 @@
+{
+  "protocol_id": "POISON-001",
+  "emergency_category": "poisoning",
+  "title": "Poisoning",
+  "description": "Swallowing, inhaling, or absorbing a harmful substance — chemicals, medications, pesticides, generator fumes, contaminated food, or alcohol.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "What substance, how much, and when? (Look for containers.)",
+      "type": "open"
+    },
+    {
+      "q": "Is the person drowsy, confused, or unconscious?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Are they vomiting or having difficulty breathing?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Vomiting",
+    "Abdominal pain",
+    "Drowsiness or confusion",
+    "Unconsciousness",
+    "Burns around mouth",
+    "Chemical smell on breath",
+    "Seizure",
+    "Difficulty breathing",
+    "Blue or pale skin"
+  ],
+  "immediate_safety_warnings": [
+    "Do NOT make the person vomit — some substances cause more damage coming back up.",
+    "Do not give anything by mouth if the person is drowsy or unconscious.",
+    "Move the person away from the source (fumes, spilled chemical) before helping."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Call 112 immediately, or the nearest poison control centre if available.",
+      "rationale": "Poisoning can deteriorate quickly.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Move the person away from the poison source (e.g. out of a room with generator fumes).",
+      "rationale": "Prevents continued exposure.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "Take the container, bottle, or remaining substance to hospital or give to emergency services.",
+      "rationale": "Identifies the poison so the right treatment can be given.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "If the person is conscious and breathing, keep them awake and on their side in the recovery position.",
+      "rationale": "Protects the airway if they vomit.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "If the person is unconscious but breathing, place in recovery position and monitor.",
+      "rationale": "Airway protection.",
+      "must_not_skip": true
+    },
+    {
+      "step": 6,
+      "instruction": "If unconscious and not breathing, start CPR.",
+      "rationale": "Cardiac arrest.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do NOT induce vomiting.",
+    "Do not give milk, water, or any 'antidote' unless told to by poison control.",
+    "Do not give activated charcoal unless directed by a professional.",
+    "Do not put your face near a chemical spill to smell it."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Person is unconscious, drowsy, or confused",
+      "action": "Call 112; recovery position"
+    },
+    {
+      "condition": "Suspected carbon monoxide (generator fumes, exhaust)",
+      "action": "Move to fresh air immediately; call 112; suspect CO poisoning"
+    },
+    {
+      "condition": "Person stops breathing",
+      "action": "Start CPR"
+    },
+    {
+      "condition": "Chemical on skin",
+      "action": "Remove contaminated clothing; flush skin with water for 20 minutes"
+    },
+    {
+      "condition": "Chemical in eye",
+      "action": "Flush eye with running water for 20 minutes, holding eyelid open"
+    }
+  ],
+  "equipment_requirements": [],
+  "approved_alternatives": [],
+  "follow_up_requirements": [
+    "All poisoning needs hospital assessment, even if the person seems well initially.",
+    "Preserve the container/substance for identification."
+  ],
+  "age_specific_pathways": {
+    "child": "Children are more sensitive to small doses — seek urgent care for any suspected poisoning.",
+    "infant": "Any suspected poisoning in an infant is an emergency.",
+    "adult": "Standard technique; note occupational/agricultural exposure."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Poisoning",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

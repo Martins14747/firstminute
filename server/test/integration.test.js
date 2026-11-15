@@ -15,7 +15,14 @@ let serverProc;
 
 before(async () => {
   serverProc = spawn(process.execPath, [SERVER_PATH], {
-    env: { ...process.env, PORT, LOG_LEVEL: 'error' },
+    env: {
+      ...process.env,
+      PORT,
+      LOG_LEVEL: 'error',
+      FIRSTMINUTE_DOCJR_USE_LLM: 'false',
+      FIRSTMINUTE_REFERENCE_LOOKUP: 'false',
+      FIRSTMINUTE_ALLOW_DRAFT_PROTOCOLS: 'true',
+    },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   // Wait for server to be ready
@@ -272,6 +279,53 @@ test('POST /api/doctor with invalid JSON → 400', async () => {
     body: 'not json{',
   });
   assert.equal(r.status, 400);
+});
+
+test('POST /api/doctor returns a deterministic protocol and draft warning', async () => {
+  const { status, body } = await postJSON('/api/doctor', {
+    message: 'My friend has a deep cut and blood is pouring out',
+  });
+  assert.equal(status, 200);
+  assert.equal(body.triage.protocol.protocol_id, 'BLEEDING-001');
+  assert.equal(body.triage.protocol.publication_status, 'draft');
+  assert.equal(body.triage.classification.llm_used, false);
+  assert.equal(body.triage.classification.source, 'rag_fallback');
+  assert.match(body.reply, /not been clinically reviewed/i);
+  assert.match(body.reply, /CALL 112 NOW/);
+  assert.match(body.reply, /Apply firm direct pressure/);
+  assert.match(body.reply, /Sterile gauze: Any clean cloth/);
+  assert.match(body.reply, /take one slow breath if you can/i);
+  assert.ok(body.reply.toLowerCase().indexOf('call 112 now') < body.reply.toLowerCase().indexOf('take one slow breath if you can'));
+  assert.doesNotMatch(body.reply, /undefined/);
+});
+
+test('POST /api/doctor does not guess a protocol from a vague message', async () => {
+  const { status, body } = await postJSON('/api/doctor', { message: 'help me' });
+  assert.equal(status, 200);
+  assert.equal(body.triage.protocol, null);
+  assert.equal(body.triage.classification.category, 'unclear');
+  assert.match(body.reply, /could not reliably match/i);
+});
+
+test('POST /api/doctor uses age pathways and refuses unsupported stroke protocols', async () => {
+  const infant = await postJSON('/api/doctor', { message: 'My baby is choking' });
+  assert.equal(infant.status, 200);
+  assert.equal(infant.body.triage.protocol.protocol_id, 'CHOKE-001');
+  assert.match(infant.body.reply, /Age-specific guidance/);
+
+  const unsupported = await postJSON('/api/doctor', { message: 'Possible stroke, face drooping' });
+  assert.equal(unsupported.status, 200);
+  assert.equal(unsupported.body.triage.protocol, null);
+  assert.equal(unsupported.body.triage.classification.unsupported_category, 'stroke');
+  assert.equal(unsupported.body.triage.safety.must_escalate, true);
+  assert.match(unsupported.body.reply, /Stroke is not yet covered/i);
+  assert.match(unsupported.body.reply, /CALL 112 NOW/);
+
+  const heat = await postJSON('/api/doctor', { message: 'Possible heat stroke, person is confused' });
+  assert.equal(heat.status, 200);
+  assert.equal(heat.body.triage.protocol, null);
+  assert.equal(heat.body.triage.classification.unsupported_category, 'heat_stroke');
+  assert.equal(heat.body.triage.safety.must_escalate, true);
 });
 
 test('POST /api/analyze with no image → 400', async () => {

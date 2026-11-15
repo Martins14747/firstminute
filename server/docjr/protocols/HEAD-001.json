@@ -1,0 +1,149 @@
+{
+  "protocol_id": "HEAD-001",
+  "emergency_category": "head_injuries_falls",
+  "title": "Head injuries and falls",
+  "description": "Injury to the head after a fall, blow, or accident. May involve concussion, skull fracture, or brain injury.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "Did the person lose consciousness, even briefly?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Are they confused, drowsy, or vomiting?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is there a severe headache, or clear fluid from the ear or nose?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Loss of consciousness",
+    "Confusion or memory loss",
+    "Vomiting",
+    "Severe headache",
+    "Drowsiness",
+    "Unequal pupils",
+    "Clear fluid from ear/nose",
+    "Bruising around eyes or behind ear",
+    "Seizure"
+  ],
+  "immediate_safety_warnings": [
+    "Do not move the person if you suspect a neck/spine injury unless they are in danger.",
+    "If the person is unconscious but breathing, keep their airway open and do not move them."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Call 112 if the person lost consciousness, is confused, vomiting, or drowsy, or if it was a high-impact fall.",
+      "rationale": "These are signs of serious brain injury.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Keep the person still. If conscious, ask them to lie down and keep their head and shoulders slightly raised.",
+      "rationale": "Reduces pressure in the head.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "Apply a cold compress (wrapped in cloth) to a visible bump for up to 20 minutes.",
+      "rationale": "Reduces swelling.",
+      "must_not_skip": false
+    },
+    {
+      "step": 4,
+      "instruction": "Check responsiveness and breathing every few minutes until help arrives.",
+      "rationale": "A head injury can deteriorate quickly.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "If the person is unconscious but breathing, place them in the recovery position and keep the airway open, supporting the neck.",
+      "rationale": "Protects the airway.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do not move someone with a possible spine injury unless in danger.",
+    "Do not let the person drive or operate machinery after a head injury.",
+    "Do not give food or drink.",
+    "Do not press on a wound if you suspect a skull fracture.",
+    "Do not let a concussed person 'sleep it off' unobserved."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Unconsciousness, even briefly",
+      "action": "Call 112"
+    },
+    {
+      "condition": "Vomiting, confusion, worsening headache, drowsiness",
+      "action": "Call 112"
+    },
+    {
+      "condition": "Unequal pupils, clear fluid from ear/nose, bruising around eyes",
+      "action": "Call 112 — skull fracture suspected"
+    },
+    {
+      "condition": "Seizure after head injury",
+      "action": "Call 112; protect from injury; do not restrain"
+    },
+    {
+      "condition": "Person becomes unconscious and stops breathing",
+      "action": "Start CPR"
+    }
+  ],
+  "equipment_requirements": [
+    {
+      "item": "Cold compress or ice pack wrapped in cloth",
+      "optional": false
+    }
+  ],
+  "approved_alternatives": [
+    {
+      "standard": "Ice pack",
+      "alternative": "A cloth soaked in cold water, or frozen vegetables wrapped in a cloth"
+    }
+  ],
+  "follow_up_requirements": [
+    "Anyone with a head injury must be observed for 24 hours for worsening symptoms.",
+    "Seek urgent care if a severe headache, vomiting, confusion, drowsiness, or weakness develops later."
+  ],
+  "age_specific_pathways": {
+    "infant": "Any fall from a height or onto a hard surface in an infant needs urgent medical assessment even if they seem fine.",
+    "child": "Children with any head injury and vomiting, drowsiness, or confusion need urgent assessment.",
+    "adult": "Standard observation."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Head Injuries",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    },
+    {
+      "source": "AHA",
+      "document": "2024 First Aid Guidelines",
+      "section": "Head and Neck Injuries",
+      "url": "https://cpr.heart.org/en/resuscitation-science/2024-first-aid-guidelines",
+      "licence": "Copyrighted — cited",
+      "citation": "AHA 2024"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

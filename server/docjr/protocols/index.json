@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-11-15T00:33:01.643Z",
+  "count": 10,
+  "protocols": [
+    {
+      "protocol_id": "CPR-001",
+      "emergency_category": "cpr_cardiac_arrest",
+      "title": "CPR and cardiac arrest",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "CHOKE-001",
+      "emergency_category": "choking",
+      "title": "Choking",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "BLEEDING-001",
+      "emergency_category": "severe_bleeding",
+      "title": "Severe bleeding and wounds",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "BURNS-001",
+      "emergency_category": "burns_scalds",
+      "title": "Burns and scalds",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "HEAD-001",
+      "emergency_category": "head_injuries_falls",
+      "title": "Head injuries and falls",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "POISON-001",
+      "emergency_category": "poisoning",
+      "title": "Poisoning",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "BITE-001",
+      "emergency_category": "snake_scorpion_bites_stings",
+      "title": "Snake and scorpion bites or stings",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "FRACTURE-001",
+      "emergency_category": "fractures_dislocations",
+      "title": "Fractures and suspected dislocations",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "SEIZURE-001",
+      "emergency_category": "seizures",
+      "title": "Seizures",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    },
+    {
+      "protocol_id": "ALLERGY-001",
+      "emergency_category": "severe_allergic_reactions",
+      "title": "Severe allergic reactions (anaphylaxis)",
+      "version": "0.1.0",
+      "publication_status": "draft"
+    }
+  ]
+}

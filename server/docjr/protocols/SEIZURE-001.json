@@ -1,0 +1,157 @@
+{
+  "protocol_id": "SEIZURE-001",
+  "emergency_category": "seizures",
+  "title": "Seizures",
+  "description": "Uncontrolled body movements or a sudden change in awareness caused by abnormal brain activity. May be due to epilepsy, fever, head injury, or other causes.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "Is the person having jerking movements they cannot control?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is the seizure lasting more than 5 minutes, or is this their first seizure?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Are they injuring themselves or struggling to breathe?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Sudden loss of awareness",
+    "Uncontrolled jerking",
+    "Stiffening",
+    "Falling",
+    "Biting the tongue",
+    "Loss of bladder control",
+    "Confusion or drowsiness afterwards",
+    "Cyanosis"
+  ],
+  "immediate_safety_warnings": [
+    "Do not restrain the person or put anything in their mouth.",
+    "Protect them from injury by moving hard objects away."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Stay calm. Time the seizure from when it starts.",
+      "rationale": "Duration determines urgency.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Clear the area of hard or sharp objects. Protect the head with something soft.",
+      "rationale": "Prevents injury.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "Do not restrain them or put anything in their mouth.",
+      "rationale": "Restraint causes injury; objects in the mouth block the airway.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "Call 112 if the seizure lasts more than 5 minutes, if it is a first seizure, if injuries occur, or if the person is pregnant or a child/infant.",
+      "rationale": "Status epilepticus is life-threatening.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "Once jerking stops, gently turn the person onto their side (recovery position) and tilt their head back.",
+      "rationale": "Keeps the airway clear.",
+      "must_not_skip": true
+    },
+    {
+      "step": 6,
+      "instruction": "Stay with them until fully awake and oriented. Reassure them.",
+      "rationale": "Post-ictal confusion is common.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do not restrain the person.",
+    "Do not put anything in their mouth (spoon, finger, cloth).",
+    "Do not give food or water until fully alert.",
+    "Do not move them unless they are in danger."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Seizure lasting more than 5 minutes",
+      "action": "Call 112 — status epilepticus"
+    },
+    {
+      "condition": "Repeated seizures without regaining consciousness",
+      "action": "Call 112"
+    },
+    {
+      "condition": "First-ever seizure",
+      "action": "Hospital assessment needed"
+    },
+    {
+      "condition": "Seizure in pregnancy, or with a serious injury",
+      "action": "Call 112"
+    },
+    {
+      "condition": "Child with seizure + fever",
+      "action": "Call 112; suspect febrile convulsion; keep cool"
+    },
+    {
+      "condition": "Not breathing after seizure",
+      "action": "Start CPR"
+    }
+  ],
+  "equipment_requirements": [
+    {
+      "item": "Soft padding (folded cloth, jacket)",
+      "optional": false
+    }
+  ],
+  "approved_alternatives": [
+    {
+      "standard": "Pillow",
+      "alternative": "Folded jacket, cloth, or a rolled item of clothing under the head"
+    }
+  ],
+  "follow_up_requirements": [
+    "First seizure needs neurological assessment.",
+    "Known epileptics should see their doctor if the pattern changes."
+  ],
+  "age_specific_pathways": {
+    "child": "Febrile seizures are common in children 6 months–5 years; cool the child, do not over-wrap; seek care if first episode or prolonged.",
+    "infant": "Any seizure in an infant needs urgent assessment.",
+    "adult": "Standard technique."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Seizures",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    },
+    {
+      "source": "AHA",
+      "document": "2024 First Aid Guidelines",
+      "section": "Seizures",
+      "url": "https://cpr.heart.org/en/resuscitation-science/2024-first-aid-guidelines",
+      "licence": "Copyrighted — cited",
+      "citation": "AHA 2024"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

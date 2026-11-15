@@ -1,0 +1,155 @@
+{
+  "protocol_id": "BURNS-001",
+  "emergency_category": "burns_scalds",
+  "title": "Burns and scalds",
+  "description": "Damage to skin and tissue from heat (fire, hot liquid, steam, hot object), electricity, or chemicals.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "What caused the burn (heat, hot liquid, chemical, electricity)?",
+      "type": "open"
+    },
+    {
+      "q": "Is the burn larger than the person's palm, or on the face/hands/genitals/major joints?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is the person having trouble breathing?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Red skin",
+    "Blistering",
+    "White or charred skin",
+    "Pain",
+    "Swelling",
+    "Peeling skin"
+  ],
+  "immediate_safety_warnings": [
+    "Ensure the source of heat is off and the person is moved away from danger (fire, electricity, chemical).",
+    "Do not approach a person still in contact with electricity without switching off the power."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Move the person away from the source of the burn safely.",
+      "rationale": "Prevents further injury.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Cool the burn immediately with cool (not ice-cold) running water for 20 minutes.",
+      "rationale": "Cooling stops the burn progressing and relieves pain.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "Remove jewellery, watches, and tight clothing near the burn before it swells — but NOT if clothing is stuck to the burn.",
+      "rationale": "Swelling can cut off circulation.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "Cover the burn loosely with cling film or a clean, non-fluffy cloth.",
+      "rationale": "Protects from infection and air.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "Call 112 for large burns, facial burns, electrical burns, chemical burns, or burns to a child or infant.",
+      "rationale": "These need urgent medical care.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do not use ice or very cold water — it can deepen the injury.",
+    "Do not apply toothpaste, butter, oil, herbs, or any home remedy.",
+    "Do not break blisters.",
+    "Do not peel off clothing stuck to the burn.",
+    "Do not apply adhesive dressings directly to the burn."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Burn larger than the palm of the hand",
+      "action": "Cool then seek medical care"
+    },
+    {
+      "condition": "Burn to face, hands, genitals, feet, or major joints",
+      "action": "Call 112"
+    },
+    {
+      "condition": "Electrical burn",
+      "action": "Call 112; cardiac monitoring needed"
+    },
+    {
+      "condition": "Chemical burn",
+      "action": "Call 112; brush dry chemicals off before flushing; flush liquid chemicals for 20+ minutes"
+    },
+    {
+      "condition": "Person not breathing after a fire",
+      "action": "Start CPR; suspect smoke inhalation"
+    }
+  ],
+  "equipment_requirements": [
+    {
+      "item": "Cool running water",
+      "optional": false
+    },
+    {
+      "item": "Cling film or clean non-fluffy cloth",
+      "optional": false
+    }
+  ],
+  "approved_alternatives": [
+    {
+      "standard": "Cling film",
+      "alternative": "Clean damp cotton cloth, kept wet"
+    },
+    {
+      "standard": "Running water",
+      "alternative": "Cool water in a clean container if no tap available"
+    }
+  ],
+  "follow_up_requirements": [
+    "All but minor burns need medical assessment.",
+    "Check tetanus status.",
+    "Electrical burns need ECG monitoring."
+  ],
+  "age_specific_pathways": {
+    "child": "Children have thinner skin — burns are more severe than they appear. Seek medical advice for any burn in a child.",
+    "infant": "All infant burns need urgent medical assessment.",
+    "adult": "Standard technique."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Burns and Scalds",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    },
+    {
+      "source": "AHA",
+      "document": "2024 First Aid Guidelines",
+      "section": "Burns",
+      "url": "https://cpr.heart.org/en/resuscitation-science/2024-first-aid-guidelines",
+      "licence": "Copyrighted — cited",
+      "citation": "AHA 2024"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

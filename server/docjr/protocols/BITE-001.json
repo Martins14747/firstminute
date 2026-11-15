@@ -1,0 +1,146 @@
+{
+  "protocol_id": "BITE-001",
+  "emergency_category": "snake_scorpion_bites_stings",
+  "title": "Snake and scorpion bites or stings",
+  "description": "Bites or stings from venomous snakes, scorpions, spiders, or insects. Severity depends on the species, the amount of venom, and the person.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "What bit/stung the person? (Snake, scorpion, bee?) Try to describe it.",
+      "type": "open"
+    },
+    {
+      "q": "Is there swelling, pain, or discolouration at the bite site?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is the person having difficulty breathing, swelling of the face, or dizziness?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Visible bite mark",
+    "Local swelling and pain",
+    "Nausea or vomiting",
+    "Drowsiness",
+    "Drooping eyelids",
+    "Difficulty swallowing or speaking",
+    "Difficulty breathing",
+    "Rapid pulse",
+    "Allergic reaction (hives, facial swelling)"
+  ],
+  "immediate_safety_warnings": [
+    "Move away from the snake or scorpion; do not try to catch or kill it.",
+    "Help the person stay calm and still — movement speeds venom spread."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Move the person away from the snake/scorpion and help them lie down and keep still.",
+      "rationale": "Stillness slows venom spread.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Call 112, or take the person to hospital immediately. Snakebite and severe scorpion sting are emergencies.",
+      "rationale": "Antivenom may be needed.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "Keep the bitten limb still and below the level of the heart if possible.",
+      "rationale": "Reduces venom spread.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "Remove rings, watches, and tight clothing near the bite before swelling starts.",
+      "rationale": "Swelling can cut off circulation.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "Note the time of the bite and the appearance of the bite site.",
+      "rationale": "Helps medical staff assess severity.",
+      "must_not_skip": true
+    },
+    {
+      "step": 6,
+      "instruction": "If a bee sting, scrape the sting out sideways with a firm edge (e.g. a card). Do not use tweezers.",
+      "rationale": "Tweezers squeeze more venom from the sac.",
+      "must_not_skip": false
+    }
+  ],
+  "actions_to_avoid": [
+    "Do not cut the bite or try to suck out the venom.",
+    "Do not apply a tight tourniquet — it can cause limb loss.",
+    "Do not give alcohol, stimulants, or any medication.",
+    "Do not apply ice or cold packs to a snakebite.",
+    "Do not try to catch or kill the snake — a photo from a safe distance is enough."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Difficulty breathing, facial swelling, or collapse",
+      "action": "Call 112; suspect anaphylaxis; if the person has an adrenaline auto-injector and is trained, help them use it"
+    },
+    {
+      "condition": "Snakebite (any)",
+      "action": "Hospital urgently; antivenom may be needed"
+    },
+    {
+      "condition": "Child with scorpion sting",
+      "action": "Urgent hospital assessment"
+    },
+    {
+      "condition": "Person becomes unconscious and stops breathing",
+      "action": "Start CPR"
+    }
+  ],
+  "equipment_requirements": [],
+  "approved_alternatives": [
+    {
+      "standard": "Pressure immobilisation bandage (for neurotoxic snakes)",
+      "alternative": "If trained and the region has neurotoxic snakes (e.g. mamba, cobra), apply a firm bandage over the bite and up the limb, immobilise with a splint. Do not use for viper bites (causes swelling)."
+    }
+  ],
+  "follow_up_requirements": [
+    "All snakebites need hospital assessment, even if symptoms are mild initially.",
+    "Watch for delayed allergic reaction."
+  ],
+  "age_specific_pathways": {
+    "child": "Children are at higher risk from the same venom dose — urgent assessment.",
+    "infant": "All bites/stings in infants need urgent hospital care.",
+    "adult": "Standard technique."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Bites and Stings",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    },
+    {
+      "source": "WHO",
+      "document": "Guidelines for the Management of Snakebites",
+      "section": "First Aid",
+      "url": "https://www.who.int/publications/i/item/9789240158630",
+      "licence": "CC BY-NC-SA 3.0 IGO — cited",
+      "citation": "WHO 2016"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

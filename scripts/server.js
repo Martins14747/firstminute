@@ -1,5 +1,5 @@
 // FirstMinute AI Backend
-// Provides: LLM "on-site doctor" chat + VLM camera-vision wound analysis
+// Provides: Doc. Jr governed doctor chat + VLM camera-vision wound analysis
 // Serves the static frontend from the project's download directory.
 //
 // Run:  node scripts/server.js
@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import https from 'node:https';
 import { VIDEO_PROMPTS, VIDEO_CAPTIONS, VIDEO_IDS } from './video-prompts.js';
 import { getZAI } from '../server/lib/zai.js';
+import { doctorRoute } from '../server/routes/doctor.js';
 
 const PORT = parseInt(process.env.PORT || '8787', 10);
 const HOST = process.env.HOST || '0.0.0.0';
@@ -20,30 +21,6 @@ const ROOT_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const DOWNLOAD_DIR = path.join(ROOT_DIR, 'download');
 const VIDEOS_DIR = path.join(DOWNLOAD_DIR, 'videos');
 fs.mkdirSync(VIDEOS_DIR, { recursive: true });
-
-// ---------- System prompt for the on-site doctor ----------
-const DOCTOR_SYSTEM = `You are "FirstMinute Doctor", an AI first-aid assistant embedded in an emergency app used by ordinary Nigerians. You help a layperson at the scene of a medical emergency.
-
-YOUR ROLE
-- Give calm, practical, step-by-step first-aid guidance a non-medical person can follow right now, with their hands.
-- Speak plainly, in short sentences. No medical jargon without explaining it.
-- Be decisive: tell them exactly what to do, in order. Do not give long disclaimers first.
-- Adapt to what they say (symptoms, age, what happened, what supplies they have).
-
-SAFETY RULES (non-negotiable)
-- If the situation may be life-threatening (not breathing, unresponsive, severe bleeding, choking, snake/scorpion bite, stroke signs, severe burn, seizure, poisoning, chest pain, anaphylaxis), your FIRST line must tell them to call 112 (or 767 in Lagos) immediately, and to keep the line free.
-- Never recommend giving a medication by mouth, injecting anything, inducing vomiting, giving food/water to an unconscious person, or any invasive procedure. Leave those to trained responders.
-- Never claim to diagnose. Say what it "may be" and what to watch for, and that a clinician must confirm.
-- If you are unsure or the case is beyond first aid, say so and tell them to call 112 / go to a hospital.
-- You are not a replacement for professional medical care. You support, you do not replace.
-
-FORMAT (keep it tight, scannable)
-1. If life-threatening, start with one line in caps: "🚨 CALL 112 NOW — then continue."
-2. Then 3–6 numbered steps of what to do right now. One action per step.
-3. Then a short "Watch for:" line listing danger signs that mean call 112 / hurry.
-4. End with one reassuring, practical sentence. No "disclaimer" boilerplate.
-
-Keep total reply under ~220 words. If they ask something outside first aid, gently steer back to the emergency at hand.`;
 
 // ---------- Helpers ----------
 function readBody(req, limit = 15 * 1024 * 1024) {
@@ -92,39 +69,7 @@ function sendStatic(res, filePath) {
 
 // ---------- Endpoints ----------
 async function handleDoctor(req, res) {
-  let payload;
-  try { payload = JSON.parse((await readBody(req)).toString()); }
-  catch { return sendJSON(res, 400, { error: 'invalid JSON' }); }
-
-  const history = Array.isArray(payload.history) ? payload.history : [];
-  const message = (payload.message || '').toString().trim();
-  const context = payload.context || ''; // optional: e.g. selected emergency
-
-  if (!message && history.length === 0) {
-    return sendJSON(res, 400, { error: 'message required' });
-  }
-
-  const messages = [{ role: 'assistant', content: DOCTOR_SYSTEM }];
-  if (context) {
-    messages.push({ role: 'assistant', content: `Context the user is in: ${context}. Tailor your guidance to this.` });
-  }
-  for (const m of history.slice(-10)) {
-    if (m.role && m.content) messages.push({ role: m.role, content: String(m.content) });
-  }
-  if (message) messages.push({ role: 'user', content: message });
-
-  try {
-    const zai = await getZAI();
-    const completion = await zai.chat.completions.create({
-      messages,
-      thinking: { type: 'disabled' },
-    });
-    const reply = completion.choices?.[0]?.message?.content || '';
-    sendJSON(res, 200, { reply });
-  } catch (err) {
-    console.error('doctor error:', err?.message || err);
-    sendJSON(res, 500, { error: 'AI request failed', detail: String(err?.message || err).slice(0, 200) });
-  }
+  return doctorRoute(req, res);
 }
 
 async function handleAnalyze(req, res) {

@@ -1,0 +1,159 @@
+{
+  "protocol_id": "BLEEDING-001",
+  "emergency_category": "severe_bleeding",
+  "title": "Severe bleeding and wounds",
+  "description": "Heavy or uncontrolled bleeding from a wound. Rapid blood loss can be life-threatening.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "Is the bleeding heavy, spurting, or soaking through cloth?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is the person responsive and oriented?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is there an object embedded in the wound?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Visible heavy bleeding",
+    "Spurting blood (arterial)",
+    "Soaked clothing",
+    "Pale, cold, clammy skin",
+    "Rapid pulse",
+    "Dizziness or confusion",
+    "Reduced consciousness"
+  ],
+  "immediate_safety_warnings": [
+    "Protect yourself from bloodborne infection — use gloves or a clean plastic bag if available.",
+    "Do not remove an embedded object — it is controlling the bleeding."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Call 112 (or ask someone to) if bleeding is heavy or spurting.",
+      "rationale": "Severe bleeding can cause fatal shock within minutes.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Apply firm direct pressure on the wound with a clean cloth or gauze.",
+      "rationale": "Pressure is the primary way to control bleeding.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "If there is an embedded object, press firmly around the object, NOT on it.",
+      "rationale": "Removing the object can worsen bleeding.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "Keep pressure for at least 10 minutes without lifting the cloth to check.",
+      "rationale": "Lifting the cloth disturbs the clot.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "If blood soaks through, do not remove the cloth — add more layers on top and press harder.",
+      "rationale": "Removing the cloth removes the clot.",
+      "must_not_skip": true
+    },
+    {
+      "step": 6,
+      "instruction": "If possible, raise the injured limb above the level of the heart (unless fractured).",
+      "rationale": "Gravity reduces blood flow to the wound.",
+      "must_not_skip": false
+    },
+    {
+      "step": 7,
+      "instruction": "Help the person lie down and keep them warm to prevent shock.",
+      "rationale": "Reduces the effects of blood loss.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do not remove an embedded object.",
+    "Do not use a tourniquet unless you are trained and bleeding is life-threatening on a limb.",
+    "Do not lift the cloth to check the wound.",
+    "Do not give food or drink (the person may need surgery).",
+    "Do not put powders, herbs, or home remedies on the wound."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Bleeding not controlled after 10 minutes of firm pressure",
+      "action": "Ensure 112 called; maintain pressure"
+    },
+    {
+      "condition": "Person becomes pale, cold, confused, or loses consciousness",
+      "action": "Treat for shock; ensure 112 called; if unconscious and not breathing, start CPR"
+    },
+    {
+      "condition": "Bleeding is spurting (arterial) or from a major wound",
+      "action": "Call 112 immediately"
+    }
+  ],
+  "equipment_requirements": [
+    {
+      "item": "Clean cloth or gauze",
+      "optional": false
+    },
+    {
+      "item": "Disposable gloves",
+      "optional": false
+    },
+    {
+      "item": "Tourniquet (trained use only)",
+      "optional": true
+    }
+  ],
+  "approved_alternatives": [
+    {
+      "standard": "Sterile gauze",
+      "alternative": "Any clean cloth (cotton, t-shirt, wrapper)"
+    },
+    {
+      "standard": "Gloves",
+      "alternative": "Clean plastic bag over the hands"
+    },
+    {
+      "standard": "Bandage",
+      "alternative": "Torn strips of cloth or a clean scarf"
+    }
+  ],
+  "follow_up_requirements": [
+    "All severe wounds need medical assessment.",
+    "Check the person's tetanus status."
+  ],
+  "age_specific_pathways": {
+    "adult": "Standard technique.",
+    "child": "Use less pressure; reassure the child; same technique.",
+    "infant": "Apply gentle but firm pressure; watch for shock."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Severe Bleeding",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

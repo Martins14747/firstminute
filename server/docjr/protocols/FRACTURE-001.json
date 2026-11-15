@@ -1,0 +1,156 @@
+{
+  "protocol_id": "FRACTURE-001",
+  "emergency_category": "fractures_dislocations",
+  "title": "Fractures and suspected dislocations",
+  "description": "A broken bone or a joint that has come out of place after a fall, blow, or twist.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "Is there pain, swelling, or an unnatural angle at the site of injury?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Can the person move the limb, or is it too painful?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Is the bone visible through the skin, or is there a wound near the break?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Pain at the site",
+    "Swelling",
+    "Bruising",
+    "Deformity or unnatural angle",
+    "Inability to use the limb",
+    "Visible bone",
+    "Numbness or coldness beyond the injury"
+  ],
+  "immediate_safety_warnings": [
+    "Do not try to push the bone back into place.",
+    "Do not move the person if you suspect a spine, neck, or pelvic injury unless they are in danger."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Keep the person still and support the injured limb in the position you found it.",
+      "rationale": "Movement worsens the injury.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Call 112 if the fracture is open (bone visible), or involves the neck, spine, pelvis, or a major leg bone, or if the person is in severe pain.",
+      "rationale": "These need emergency care.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "For an open fracture, control bleeding with a clean cloth around the wound, but do not press directly on the bone.",
+      "rationale": "Bleeding control without pushing bone back.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "Immobilise the limb with a splint or by padding around it and supporting it. Do not move it to apply the splint.",
+      "rationale": "Prevents movement during transport.",
+      "must_not_skip": false
+    },
+    {
+      "step": 5,
+      "instruction": "Apply a cold compress wrapped in cloth to reduce swelling.",
+      "rationale": "Reduces pain and swelling.",
+      "must_not_skip": false
+    },
+    {
+      "step": 6,
+      "instruction": "Check the fingers or toes beyond the injury for warmth, colour, and feeling. If cold, pale, or numb, the limb needs urgent attention.",
+      "rationale": "Blood supply may be compromised.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do not try to reduce (push back) a dislocation or fracture.",
+    "Do not move the limb to test it.",
+    "Do not give food or drink (surgery may be needed).",
+    "Do not apply the splint so tight it cuts off circulation."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Open fracture (bone visible)",
+      "action": "Call 112; control bleeding; risk of infection"
+    },
+    {
+      "condition": "Suspected neck or spine injury",
+      "action": "Call 112; do not move; keep still"
+    },
+    {
+      "condition": "Limb is cold, pale, or numb beyond the injury",
+      "action": "Urgent hospital care; blood supply at risk"
+    },
+    {
+      "condition": "Severe pain, deformity, or the person cannot move",
+      "action": "Seek hospital care"
+    }
+  ],
+  "equipment_requirements": [
+    {
+      "item": "Splint (rigid material: stick, board, rolled magazine)",
+      "optional": false
+    },
+    {
+      "item": "Bandages or cloth strips to tie the splint",
+      "optional": false
+    },
+    {
+      "item": "Cold compress wrapped in cloth",
+      "optional": false
+    }
+  ],
+  "approved_alternatives": [
+    {
+      "standard": "Splint",
+      "alternative": "Rolled newspaper/magazine, stick, umbrella rib, folded cardboard"
+    },
+    {
+      "standard": "Bandage",
+      "alternative": "Torn cloth strips, scarf, tie"
+    },
+    {
+      "standard": "Sling",
+      "alternative": "A piece of cloth tied around the neck to support an arm"
+    }
+  ],
+  "follow_up_requirements": [
+    "All suspected fractures need an X-ray and medical assessment.",
+    "Re-check circulation and feeling in the limb regularly until treated."
+  ],
+  "age_specific_pathways": {
+    "child": "Children's bones are more flexible — greenstick fractures can be subtle. Seek assessment for any significant injury.",
+    "infant": "Any suspected fracture needs urgent assessment; do not move unnecessarily.",
+    "adult": "Standard technique."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Fractures and Dislocations",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

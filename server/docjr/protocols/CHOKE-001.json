@@ -1,0 +1,133 @@
+{
+  "protocol_id": "CHOKE-001",
+  "emergency_category": "choking",
+  "title": "Choking",
+  "description": "An object is blocking the airway. The person cannot breathe, speak, or cough effectively.",
+  "applicable_age_groups": [
+    "adult",
+    "child",
+    "infant"
+  ],
+  "recognition_questions": [
+    {
+      "q": "Is the person able to speak, cough, or breathe?",
+      "type": "yes_no"
+    },
+    {
+      "q": "Are they clutching their throat (universal choking sign)?",
+      "type": "yes_no"
+    }
+  ],
+  "observable_symptoms": [
+    "Cannot speak or cough",
+    "Clutching throat",
+    "Difficulty breathing",
+    "Wheezing or high-pitched sounds",
+    "Cyanosis (blue lips/face)",
+    "Loss of consciousness"
+  ],
+  "immediate_safety_warnings": [
+    "If the person becomes unconscious, lower them carefully to the ground and start CPR.",
+    "Do not leave the person alone to find help if they are conscious — call 112 on speaker."
+  ],
+  "ordered_instructions": [
+    {
+      "step": 1,
+      "instruction": "Ask 'Are you choking?'. If they cannot speak, cough, or breathe, act immediately.",
+      "rationale": "Confirms severe airway obstruction.",
+      "must_not_skip": true
+    },
+    {
+      "step": 2,
+      "instruction": "Call 112 (or ask someone to).",
+      "rationale": "Emergency services are needed if back blows fail.",
+      "must_not_skip": true
+    },
+    {
+      "step": 3,
+      "instruction": "Lean the person forward. Give 5 sharp back blows between the shoulder blades with the heel of your hand.",
+      "rationale": "Back blows can dislodge the obstruction.",
+      "must_not_skip": true
+    },
+    {
+      "step": 4,
+      "instruction": "If still blocked, give 5 abdominal thrusts (Heimlich): stand behind, place a fist above the navel, grasp with the other hand, pull sharply inward and upward.",
+      "rationale": "Abdominal thrusts push air from the lungs to expel the object.",
+      "must_not_skip": true
+    },
+    {
+      "step": 5,
+      "instruction": "Alternate 5 back blows and 5 abdominal thrusts until the object is dislodged or the person becomes unconscious.",
+      "rationale": "Alternating techniques increases success.",
+      "must_not_skip": true
+    },
+    {
+      "step": 6,
+      "instruction": "If the person becomes unconscious, lower them carefully, start CPR. Check the mouth before rescue breaths.",
+      "rationale": "Cardiac arrest requires immediate CPR.",
+      "must_not_skip": true
+    }
+  ],
+  "actions_to_avoid": [
+    "Do NOT do abdominal thrusts on infants under 1 year — use chest thrusts instead.",
+    "Do not do back blows or abdominal thrusts if the person can still cough forcefully — encourage them to cough.",
+    "Do not perform a blind finger sweep — you may push the object deeper.",
+    "Do not give food or water."
+  ],
+  "escalation_conditions": [
+    {
+      "condition": "Person loses consciousness",
+      "action": "Start CPR immediately"
+    },
+    {
+      "condition": "Object not dislodged after 3 cycles of back blows + abdominal thrusts",
+      "action": "Ensure 112 has been called"
+    },
+    {
+      "condition": "Person was given abdominal thrusts (even if successful)",
+      "action": "They must be assessed in hospital for internal injury"
+    }
+  ],
+  "equipment_requirements": [],
+  "approved_alternatives": [
+    {
+      "standard": "Abdominal thrusts (adult/child)",
+      "alternative": "Chest thrusts for a pregnant or obese person: place hands on the lower half of the breastbone and thrust inward"
+    }
+  ],
+  "follow_up_requirements": [
+    "Anyone who received abdominal thrusts must see a doctor to check for internal injury."
+  ],
+  "age_specific_pathways": {
+    "infant": "Use 5 back blows (infant face-down along your forearm, head lower than chest) then 5 chest thrusts (two fingers on the lower breastbone). Repeat. Do NOT use abdominal thrusts.",
+    "child": "Same technique as adult but use less force. Kneel to be at the child's height.",
+    "adult": "Standard Heimlich technique."
+  },
+  "source_references": [
+    {
+      "source": "IFRC",
+      "document": "International First Aid, Resuscitation and Education Guidelines",
+      "section": "Choking",
+      "url": "https://www.ifrc.org/document/ifrc-international-first-aid-resuscitation-and-education-guidelines-2025",
+      "licence": "IFRC copyright — summarised",
+      "citation": "IFRC 2025"
+    },
+    {
+      "source": "AHA",
+      "document": "2024 First Aid Guidelines",
+      "section": "Choking",
+      "url": "https://cpr.heart.org/en/resuscitation-science/2024-first-aid-guidelines",
+      "licence": "Copyrighted — cited",
+      "citation": "AHA 2024"
+    }
+  ],
+  "reviewer": {
+    "name": "TBD",
+    "qualification": "TBD",
+    "institution": "TBD",
+    "review_date": "TBD"
+  },
+  "version": "0.1.0",
+  "last_review_date": "TBD",
+  "publication_status": "draft"
+}

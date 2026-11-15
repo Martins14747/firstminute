@@ -32,7 +32,11 @@ To use it from your phone on the same Wi-Fi, find your machine's LAN IP (e.g. `1
 
 **Configuration**: `PORT` (8787) · `HOST` (0.0.0.0) · `LOG_LEVEL` (info/debug/warn/error) · `LOG_FILE` (optional file path) · `DB_DIR` (data directory, defaults to `server/data`). Set environment variables in your shell or hosting platform; Node does not load `.env` automatically. See `.env.example`.
 
-**AI features require provider credentials.** The doctor, image analysis, and on-demand video generation use `z-ai-web-dev-sdk`. Configure either a `.z-ai-config` JSON file in the project root or home directory, or set both `ZAI_BASE_URL` and `ZAI_API_KEY` in the hosting environment. When environment variables are used and no config file exists, the server writes a mode-restricted config file in its home directory. Existing config files take precedence.
+**AI provider credentials are required for image analysis, on-demand video generation, and natural conversation.** The doctor uses Doc. Jr's offline retriever and deterministic safety checks; optional hosted classification uses `z-ai-web-dev-sdk` and falls back to retrieval if unavailable. For clearly non-medical messages, the same LLM can now hold a conversation using recent chat turns. Medical and emergency instructions remain on the reviewed protocol path. Configure either a `.z-ai-config` JSON file in the project root or home directory, or set both `ZAI_BASE_URL` and `ZAI_API_KEY` in the hosting environment. When environment variables are used and no config file exists, the server writes a mode-restricted config file in its home directory. Existing config files take precedence.
+
+Optional communication preferences can be saved and forgotten in the Doctor tab. They are stored in the browser's local storage and sent with general chat requests for style only; chat transcripts are not saved as a user profile or used by this app to train a model.
+
+When Doc. Jr cannot match a non-urgent question to a local protocol, it can look up short reference snippets through the U.S. National Library of Medicine's MedlinePlus search service. It shows links and background summaries only; scraped content never becomes first-aid instructions. Life-threatening or escalating cases skip web lookup. This sends the current message (not chat history) to MedlinePlus after basic removal of email addresses, URLs, phone-like numbers, and simple name phrases. Set `FIRSTMINUTE_REFERENCE_LOOKUP=false` to disable online reference lookup; without a network connection, the assistant abstains rather than guessing.
 
 ```json
 {
@@ -96,21 +100,18 @@ Copy `.env.example` to `.env` and set AI credentials if using AI features. The t
 | 6 | **Incident report** — structured form → shareable text for WhatsApp/SMS/email/copy | ✅ |
 | 7 | **Follow-up reminders** — schedule check-ins via Notification API + localStorage | ✅ |
 | 8 | **Camera aid** — wound/burn framing overlay, capture to device (stays local) | ✅ |
-| 9 | **AI on-site doctor** — chat with a medical-first-aid LLM; context-aware, life-threatening cases lead with "call 112" | ✅ *(needs backend)* |
+| 9 | **AI on-site doctor** — Doc. Jr governed triage with deterministic protocol instructions; life-threatening cases lead with "call 112" | ✅ *(needs backend)* |
 | 10 | **Camera vision analysis** — captured image → VLM describes visible signs and suggests a first-aid category, with one tap to discuss with the AI doctor | ✅ *(needs backend)* |
 | 11 | **AI video walkthroughs** — each emergency has a short AI-generated demonstration video (CPR hand position, Heimlich, splinting, etc.); generated on first request, then cached for instant replay | ✅ *(needs backend)* |
 | 12 | **Top 12 emergencies for Nigeria** + emergency numbers (112, 767, NEMA) | ✅ |
 
 ## How the AI works
 
-**AI Doctor chat** (`POST /api/doctor`): a chat completion using a strict first-aid system prompt. The doctor:
-- Leads life-threatening cases with an in-caps "🚨 CALL 112 NOW — then continue." line.
-- Replies in a tight format: numbered steps → "Watch for:" danger signs → one reassuring sentence.
-- Never recommends medication by mouth, injecting, inducing vomiting, or invasive procedures.
-- Carries conversation context (last 10 turns) and an optional emergency-type context so guidance matches the screen the user came from.
-- Is explicitly *not* a replacement for professional care and never claims to diagnose.
+**AI Doctor chat** (`POST /api/doctor`): uses the integrated Doc. Jr engine (`server/docjr/`). Its deterministic safety checks and RAG retriever select from ten governed protocol files; the optional LLM only classifies the emergency and suggests clarification questions. The LLM does not write first-aid instructions. Life-threatening signals trigger a deterministic 112 escalation, followed by brief calm, supportive wording; all clinical steps still come from the protocol. A 100-case synthetic corpus is used for offline evaluation, not model fine-tuning. The endpoint returns the existing `{ reply }` field plus structured `triage` metadata.
 
-**Camera vision analysis** (`POST /api/analyze`): the captured image (base64 data URL) is sent to the GLM-4.6v vision model with a prompt that asks it to describe the visible injury type, size, location, colour, and severity signs, then suggest a likely first-aid category. The prompt enforces: no diagnosis, no "it's fine" reassurance, a retake request for unclear images, and a "call 112" prompt for anything that looks life-threatening. A "Discuss with AI doctor" button carries the vision result into the doctor chat for follow-up.
+All current Doc. Jr protocols are drafts pending clinical review. Draft instructions are visibly marked during development; production (`NODE_ENV=production`) withholds them unless `FIRSTMINUTE_ALLOW_DRAFT_PROTOCOLS=true` is explicitly set. When no eligible protocol matches (including stroke and heat stroke, which are not covered by Doc. Jr yet), the doctor does not invent instructions and instead advises emergency escalation where appropriate. Set `FIRSTMINUTE_DOCJR_USE_LLM=false` to use offline deterministic retrieval only; the z-ai SDK remains used by vision and video features.
+
+**Camera vision analysis** (`POST /api/analyze`): the captured image remains on the device unless the user chooses analysis; then its base64 data URL is sent to the FirstMinute server and configured GLM-4.6v vision provider. The service describes visible signs and suggests a likely first-aid category, without diagnosing. The camera stream is stopped when leaving the Camera Aid screen or hiding the page. A missing vision-provider configuration returns a clear service-unavailable response; the AI Doctor's offline text guidance remains available.
 
 Both run through the backend, which also serves the static frontend and this README.
 
@@ -149,7 +150,7 @@ firstminute/
 │   │   ├── prompts.js      Doctor system prompt + vision-analyzer base prompt
 │   │   └── db.json         Persistent incidents + reminders (auto-created)
 │   ├── routes/
-│   │   ├── doctor.js       POST /api/doctor          — LLM first-aid chat
+│   │   ├── doctor.js       POST /api/doctor          — Doc. Jr governed triage + protocol reply
 │   │   ├── analyze.js      POST /api/analyze          — VLM camera-vision analysis
 │   │   ├── video.js        GET/POST video endpoints   — status, start, stream MP4
 │   │   ├── emergencies.js  GET /api/emergencies       — catalogue + search
@@ -158,22 +159,25 @@ firstminute/
 │   │   ├── reminders.js    CRUD /api/reminders        — follow-up reminders
 │   │   ├── health.js       GET /api/health + /stats   — liveness + counts
 │   │   └── static.js       Serves the frontend + README (path-traversal safe)
-│   └── test/
-│       ├── data.test.js        Unit tests for the data layer (11 tests)
-│       ├── lib.test.js         Unit tests for router/http/db/videoStore (19 tests)
-│       └── integration.test.js HTTP integration tests against a live server (40 tests)
+│   ├── test/
+│   │   ├── data.test.js        Unit tests for the data layer (11 tests)
+│   │   ├── lib.test.js         Unit tests for router/http/db/videoStore (19 tests)
+│   │   └── integration.test.js HTTP integration tests against a live server (43 tests)
+│   └── docjr/
+│       ├── src/                Integrated deterministic engine, retriever, safety, and classifier
+│       └── protocols/          Ten governed protocol JSON files (currently draft)
 ├── download/
 │   ├── firstminute.html    The responsive frontend (single file, ~140 KB)
 │   ├── README.md           Copy of this README (served at /README.md)
 │   └── videos/             Cached AI-generated MP4 walkthroughs (cpr.mp4, snake.mp4)
 └── scripts/
-    ├── server.js           Monolithic single-file backend (alternative entry point)
+    ├── server.js           Legacy backend; doctor route shares the Doc. Jr handler
     ├── generate-videos.js  Offline batch video generator (resumable)
     ├── video-prompts.js    Video prompt source (mirrors server/data/video-prompts.js)
     └── analyze-ui-reference.js  UI-reference analysis helper
 ```
 
-> **Two entry points.** `server/server.js` is the modular backend (used by `npm start`). `scripts/server.js` is a legacy monolithic alternative, also portable and configurable with `PORT`/`HOST`; use the modular entry point for deployment.
+> **Two entry points.** `server/server.js` is the modular backend (used by `npm start`). `scripts/server.js` is a legacy alternative; its doctor API delegates to the same Doc. Jr handler.
 
 ### REST API
 
@@ -181,7 +185,7 @@ firstminute/
 |---|---|---|
 | GET | `/api/health` | Liveness probe |
 | GET | `/api/health/stats` | Counts + uptime + video cache status |
-| POST | `/api/doctor` | AI doctor chat (`{message, history, context}` → `{reply}`) |
+| POST | `/api/doctor` | Doc. Jr governed triage (`{message, history, context}` → `{reply, triage}`) |
 | POST | `/api/analyze` | Camera-vision analysis (`{image, question?}` → `{description}`) |
 | GET | `/api/emergencies` | List 12 emergencies (optional `?q=search`) |
 | GET | `/api/emergencies/:id` | One emergency protocol |

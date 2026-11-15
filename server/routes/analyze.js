@@ -6,6 +6,11 @@ import { visionComplete } from '../lib/zai.js';
 import { VISION_BASE, DEFAULT_VISION_QUESTION } from '../data/prompts.js';
 import { logger } from '../lib/logger.js';
 
+export function isVisionConfigurationError(error) {
+  const message = String(error?.message || error);
+  return /Configuration file not found or invalid|ZAI_BASE_URL and ZAI_API_KEY must both be set/i.test(message);
+}
+
 export async function analyzeRoute(req, res) {
   const { ok, data, error } = await readJSON(req);
   if (!ok) return sendJSON(res, 400, { error });
@@ -23,7 +28,12 @@ export async function analyzeRoute(req, res) {
     logger.info('vision analysis', { chars: description.length });
     sendJSON(res, 200, { description });
   } catch (err) {
-    logger.error('analyze error', { error: String(err.message || err).slice(0, 200) });
+    const message = String(err.message || err);
+    if (isVisionConfigurationError(err)) {
+      logger.warn('vision analysis unavailable: provider configuration missing');
+      return sendJSON(res, 503, { error: 'AI vision is not configured on this server' });
+    }
+    logger.error('analyze error', { error: message.slice(0, 200) });
     sendJSON(res, 500, { error: 'vision request failed', detail: String(err.message || err).slice(0, 200) });
   }
 }

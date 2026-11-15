@@ -519,6 +519,13 @@ body.has-back .icon-btn.back{ opacity:1; pointer-events:auto; }
 .chat-intro .tag{ font-size:11.5px; color:var(--muted); display:flex; align-items:center; gap:6px; margin-top:2px; }
 .chat-intro .tag .live{ width:7px; height:7px; border-radius:50%; background:var(--emerald); animation:ping 2s infinite; }
 .chat-intro p{ font-size:12.5px; color:var(--muted); line-height:1.6; }
+.chat-preferences{ margin-top:12px; padding:10px 12px; border:1px solid var(--glass-border); border-radius:var(--r-md); background:rgba(255,255,255,.55); }
+.chat-preferences summary{ cursor:pointer; font-size:12px; font-weight:700; color:var(--ink-2); }
+.chat-preferences label{ display:block; margin-top:10px; font-size:12px; color:var(--ink-2); }
+.chat-preferences input{ width:100%; margin-top:5px; padding:9px 10px; border:1px solid var(--line-strong); border-radius:var(--r-sm); background:#fff; font-size:13px; }
+.chat-preferences .pref-actions{ display:flex; gap:8px; margin-top:8px; }
+.chat-preferences button{ padding:7px 10px; border:1px solid var(--line-strong); border-radius:var(--r-sm); background:#fff; font-size:12px; }
+.chat-preferences .pref-note,.chat-preferences #doctorPreferencesStatus{ display:block; margin:7px 0 0; font-size:11px; color:var(--muted); }
 .chips-prompt{ display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
 .chips-prompt .chip{ font-size:11px; }
 .chat-status{ display:flex; align-items:center; gap:8px; padding:8px 16px; font-size:12px; color:var(--muted); }
@@ -942,7 +949,7 @@ body.has-back .icon-btn.back{ opacity:1; pointer-events:auto; }
 <main class="screen" id="screen-camera">
   <div class="form-card">
     <h3>Camera Aid</h3>
-    <div class="sub">Frame a wound or burn to capture it for your incident report. The crosshair helps keep the camera steady and centred. The image stays on your device.</div>
+    <div class="sub">Frame a wound or burn to capture it for your incident report. The crosshair helps keep the camera steady and centred. Captured images stay on your device unless you choose AI analysis, which sends the image to FirstMinute's AI vision service for processing.</div>
     <div class="cam-wrap" id="camWrap">
       <video id="camVideo" autoplay playsinline></video>
       <div class="cam-overlay"><div class="frame"><div class="corners"></div></div></div>
@@ -1007,7 +1014,18 @@ body.has-back .icon-btn.back{ opacity:1; pointer-events:auto; }
           <div class="tag"><span class="live"></span>AI on-site doctor</div>
         </div>
       </div>
-      <p>Tell the doctor what's happening. Describe symptoms, age, what caused it, and what you have on hand. In a life-threatening emergency, call 112 first — the doctor will guide you while you wait.</p>
+      <p>Chat about everyday topics or ask for first-aid help. In a life-threatening emergency, call 112 first — the assistant will guide you with reviewed steps while you wait.</p>
+      <details class="chat-preferences">
+        <summary>Conversation preferences</summary>
+        <label for="doctorPreferences">Remember a communication preference</label>
+        <input id="doctorPreferences" maxlength="180" placeholder="For example: use short, simple answers">
+        <p class="pref-note">Saved only in this browser and used for response style. Don’t save health information here.</p>
+        <div class="pref-actions">
+          <button type="button" id="saveDoctorPreferences">Save preference</button>
+          <button type="button" id="clearDoctorPreferences">Forget preference</button>
+        </div>
+        <span id="doctorPreferencesStatus" role="status" aria-live="polite"></span>
+      </details>
       <div class="chips-prompt" id="docChips"></div>
     </div>
 
@@ -1022,7 +1040,7 @@ body.has-back .icon-btn.back{ opacity:1; pointer-events:auto; }
   </div>
 
   <div class="chat-input-wrap">
-    <textarea id="chatInput" rows="1" placeholder="Describe the emergency…" autocomplete="off"></textarea>
+    <textarea id="chatInput" rows="1" placeholder="Ask a question or describe what’s happening…" autocomplete="off"></textarea>
     <button class="chat-send" id="chatSend" aria-label="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -1367,6 +1385,7 @@ const TITLES = {
   reminders:'Reminders', doctor:'AI Doctor'
 };
 function go(screen, ctx){
+  if(screen !== 'camera' && camStream) stopCamera();
   SCREENS.forEach(s => document.getElementById('screen-'+s).classList.toggle('active', s===screen));
   document.getElementById('screenTitle').textContent = TITLES[screen] || '';
   document.body.classList.toggle('has-back', screen!=='home');
@@ -1722,6 +1741,16 @@ const camClearBtn = document.getElementById('camClearBtn');
 const camCapture = document.getElementById('camCapture');
 const camResult = document.getElementById('camResult');
 let camStream = null;
+function stopCamera(){
+  if(camStream) camStream.getTracks().forEach(track=>track.stop());
+  camStream = null;
+  camVideo.srcObject = null;
+  camStartBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Start camera';
+  camClearBtn.style.display = window._lastCapturedImage ? 'inline-flex' : 'none';
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) stopCamera();
+});
 camStartBtn.addEventListener('click', async () => {
   if(camStream){ return; }
   try{
@@ -1742,14 +1771,14 @@ camCapture.addEventListener('click', () => {
   c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
   const url = c.toDataURL('image/jpeg', 0.8);
   window._lastCapturedImage = url;
-  camResult.innerHTML = `<img src="${url}" alt="Captured wound image"><div class="muted center" style="margin-top:8px;font-size:12px;">Image stored on this device only.</div>
+  camResult.innerHTML = `<img src="${url}" alt="Captured wound image"><div class="muted center" style="margin-top:8px;font-size:12px;">Saved on this device. Choosing AI analysis sends this image to FirstMinute's AI vision service for processing.</div>
     <button class="btn primary" id="camAnalyzeBtn" style="margin-top:10px;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M5 5l3 3M2 12h4M5 19l3-3M12 22v-4M19 19l-3-3M22 12h-4M19 5l-3 3"/><circle cx="12" cy="12" r="3"/></svg>
-      Ask AI doctor to analyse this image
+      Analyse with AI vision
     </button>
     <div class="cam-analysis" id="camAnalysis" style="display:none;"></div>`;
   document.getElementById('camAnalyzeBtn').addEventListener('click', analyzeCapturedImage);
-  toast('Captured. Tap "Ask AI doctor" to analyse.');
+  toast('Captured. Choose whether to send it for AI analysis.');
 });
 
 async function analyzeCapturedImage(){
@@ -1760,7 +1789,7 @@ async function analyzeCapturedImage(){
   if(!box) return;
   box.style.display = 'block';
   box.className = 'cam-analysis loading';
-  box.innerHTML = '<h4><span class="spinner" style="width:13px;height:13px;border:2px solid var(--azure);border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span> AI doctor is looking at the image…</h4><div class="body">Analysing visible signs. This is not a diagnosis — a clinician must confirm.</div>';
+  box.innerHTML = '<h4><span class="spinner" style="width:13px;height:13px;border:2px solid var(--azure);border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;"></span> AI vision is analysing the image…</h4><div class="body">Analysing visible signs. This is not a diagnosis — a clinician must confirm.</div>';
   if(btn){ btn.disabled = true; btn.style.opacity = .5; }
   try{
     const res = await fetch('/api/analyze', {
@@ -1768,14 +1797,14 @@ async function analyzeCapturedImage(){
       body: JSON.stringify({ image: img })
     });
     const data = await res.json();
-    if(!res.ok) throw new Error(data.error || 'analysis failed');
+    if(!res.ok) throw new Error(data.error || 'AI vision analysis is unavailable.');
     const desc = (data.description||'').trim();
     box.className = 'cam-analysis';
     box.innerHTML = `<h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> AI vision assessment</h4><div class="body">${formatAnalysis(desc)}</div>
       <button class="btn outline" style="margin-top:10px;" onclick="askDoctorAboutImage()">Discuss with AI doctor</button>`;
   }catch(err){
     box.className = 'cam-analysis';
-    box.innerHTML = `<h4 style="color:var(--crimson);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Analysis failed</h4><div class="body">${String(err.message||err)}. If this is an emergency, call 112 now and describe the injury to the AI doctor in the Doctor tab.</div>`;
+    box.innerHTML = `<h4 style="color:var(--crimson);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Analysis unavailable</h4><div class="body">${String(err.message||err)} You can still describe the injury to the AI Doctor. If this is an emergency, call 112 now.</div>`;
   }finally{
     if(btn){ btn.disabled = false; btn.style.opacity = 1; }
   }
@@ -1803,12 +1832,12 @@ function askDoctorAboutImage(){
   }, 200);
 }
 camClearBtn.addEventListener('click', () => {
-  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
-  camVideo.srcObject=null; camResult.innerHTML='';
-  camStartBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Start camera';
+  stopCamera();
+  window._lastCapturedImage = null;
   camClearBtn.style.display = 'none';
+  camResult.innerHTML = '';
 });
-window.addEventListener('beforeunload', ()=>{ if(camStream) camStream.getTracks().forEach(t=>t.stop()); });
+window.addEventListener('beforeunload', stopCamera);
 
 /* ============ REMINDERS ============ */
 let reminders = JSON.parse(localStorage.getItem('firstminute_reminders')||'[]');
@@ -1876,10 +1905,43 @@ const chatSpinner = document.getElementById('chatSpinner');
 const chatStatusText = document.getElementById('chatStatusText');
 const chatSuggestions = document.getElementById('chatSuggestions');
 const docChips = document.getElementById('docChips');
+const doctorPreferencesInput = document.getElementById('doctorPreferences');
+const doctorPreferencesStatus = document.getElementById('doctorPreferencesStatus');
 
 let doctorHistory = [];
 let doctorContext = '';
 let doctorBusy = false;
+let doctorPreferences = '';
+
+try{
+  doctorPreferences = localStorage.getItem('firstminute_doctor_preferences') || '';
+  doctorPreferencesInput.value = doctorPreferences;
+}catch{
+  doctorPreferencesStatus.textContent = 'Preferences are unavailable in this browser.';
+}
+
+document.getElementById('saveDoctorPreferences').addEventListener('click', () => {
+  doctorPreferences = doctorPreferencesInput.value.trim().slice(0, 180);
+  try{
+    if(doctorPreferences) localStorage.setItem('firstminute_doctor_preferences', doctorPreferences);
+    else localStorage.removeItem('firstminute_doctor_preferences');
+    doctorPreferencesInput.value = doctorPreferences;
+    doctorPreferencesStatus.textContent = doctorPreferences ? 'Preference saved on this device.' : 'No preference saved.';
+  }catch{
+    doctorPreferencesStatus.textContent = 'Could not save this preference in the browser.';
+  }
+});
+
+document.getElementById('clearDoctorPreferences').addEventListener('click', () => {
+  doctorPreferences = '';
+  doctorPreferencesInput.value = '';
+  try{
+    localStorage.removeItem('firstminute_doctor_preferences');
+    doctorPreferencesStatus.textContent = 'Saved preference forgotten.';
+  }catch{
+    doctorPreferencesStatus.textContent = 'Could not remove the saved preference.';
+  }
+});
 
 const QUICK_PROMPTS = [
   "Someone collapsed and isn't responding",
@@ -1917,6 +1979,15 @@ function renderDoctorMsg(role, text){
 function formatDoctorText(text){
   // Escape HTML first
   let s = String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Only render links to the trusted MedlinePlus origin.
+  s = s.replace(/\[([^\]]+)\]\((https:\/\/medlineplus\.gov\/[^)\s"]+)\)/g, (match, label, href) => {
+    try {
+      if(new URL(href).origin !== 'https://medlineplus.gov') return match;
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    } catch {
+      return match;
+    }
+  });
   // Bold the emergency alert line
   s = s.replace(/^(🚨[^\n]*)$/gm, '<div class="alert">$1</div>');
   // Bold "Watch for:" prefix
@@ -1955,7 +2026,7 @@ async function sendDoctorMsg(){
   try{
     const res = await fetch('/api/doctor', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ message: msg, history: doctorHistory, context: doctorContext })
+      body: JSON.stringify({ message: msg, history: doctorHistory, context: doctorContext, preferences: doctorPreferences })
     });
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || 'request failed');
@@ -1990,7 +2061,7 @@ let doctorWelcomed = false;
 function welcomeDoctor(){
   if(doctorWelcomed) return;
   doctorWelcomed = true;
-  renderDoctorMsg('doctor', "Hello, I'm your **FirstMinute Doctor**. Tell me what's happening — symptoms, the person's age, what caused it, and anything you have on hand (water, cloth, etc.). If it looks life-threatening, **call 112 first** and I'll guide you while you wait.\n\nWhat's the emergency?");
+  renderDoctorMsg('doctor', "Hello, I'm your **FirstMinute AI assistant**. We can chat about everyday topics, or you can tell me what's happening and I'll help with reviewed first-aid guidance. If it looks life-threatening, **call 112 first**.\n\nWhat would you like to talk about?");
   chatSuggestions.innerHTML = QUICK_PROMPTS.map(p =>
     `<button class="sugg" onclick="useSuggestion(${JSON.stringify(p)})">${p}</button>`
   ).join('');
